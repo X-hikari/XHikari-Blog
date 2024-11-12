@@ -1,39 +1,42 @@
 <template>
-  <header class="header">
-    <div class="header-content">
-      
-      <!-- 左侧：Logo部分和登录及日夜切换按钮 -->
-      <div class="left-actions">
-        <div class="logo">
-          <img src="@/assets/logo.svg" alt="Logo" />
+  <div class="#app">
+
+    <header class="header">
+      <div class="header-content">
+        
+        <!-- 左侧：Logo部分和登录及日夜切换按钮 -->
+        <div class="left-actions">
+          <div class="logo">
+            <img src="@/assets/logo.svg" alt="Logo" />
+          </div>
+          <a href="#" class="login"><i class="iconfont icon-denglu-copy"></i> 登录</a>
+          <button @click="toggleTheme">
+            <i :class="isDarkMode ? 'icon-light-mode' : 'icon-dark-mode'"></i>
+          </button>
         </div>
-        <a href="#" class="login"><i class="iconfont icon-denglu-copy"></i> 登录</a>
-        <button @click="toggleTheme">
-          <i :class="isDarkMode ? 'icon-light-mode' : 'icon-dark-mode'"></i>
-        </button>
+  
+        <!-- 右侧：导航链接 -->
+        <nav class="nav-links">
+          <router-link to="/home"><i class="iconfont icon-zhuye"></i> 主页</router-link>
+          <router-link to="/classify"><i class="iconfont icon-icon"></i> 分类</router-link>
+          <router-link to="/photos"><i class="iconfont icon-xiangce"></i> 相册</router-link>
+          <router-link to="/emotion"><i class="iconfont icon-comiisfashuoshuo"></i> 说说</router-link>
+          <router-link to="/message"><i class="iconfont icon-liuyanban-05"></i> 留言</router-link>
+          <router-link to="/more"><i class="iconfont icon-gengduo"></i> 更多</router-link>
+          <router-link to="/music"><i class="iconfont icon-icon-test"></i> 音乐</router-link>
+          <router-link to="/" class="search-link">
+            <i class="iconfont icon-sousuo"></i> 搜索
+            <!-- 搜索框 -->
+          </router-link>
+          <input type="text" class="search-input" placeholder="搜索..." />
+        </nav>
       </div>
-
-      <!-- 右侧：导航链接 -->
-      <nav class="nav-links">
-        <router-link to="/home"><i class="iconfont icon-zhuye"></i> 主页</router-link>
-        <router-link to="/classify"><i class="iconfont icon-icon"></i> 分类</router-link>
-        <router-link to="/photos"><i class="iconfont icon-xiangce"></i> 相册</router-link>
-        <router-link to="/emotion"><i class="iconfont icon-comiisfashuoshuo"></i> 说说</router-link>
-        <router-link to="/message"><i class="iconfont icon-liuyanban-05"></i> 留言</router-link>
-        <router-link to="/more"><i class="iconfont icon-gengduo"></i> 更多</router-link>
-        <router-link to="/music"><i class="iconfont icon-icon-test"></i> 音乐</router-link>
-        <router-link to="/" class="search-link">
-          <i class="iconfont icon-sousuo"></i> 搜索
-          <!-- 搜索框 -->
-        </router-link>
-        <input type="text" class="search-input" placeholder="搜索..." />
-      </nav>
+    </header>
+  
+    <div class="main-content">
+    <!-- <div class="view"> -->
+      <router-view></router-view>
     </div>
-  </header>
-
-  <!-- <div class="main-content"> -->
-  <div>
-    <router-view></router-view>
   </div>
 
 </template>
@@ -234,9 +237,19 @@ button {
   color: white;
 }
 
-/* 为了防止导航栏遮挡内容，给页面内容增加一个顶部填充 */
 .main-content {
-  padding-top: 60px; /* 填充的高度应和header的高度一致 */
+  position: relative; /* 或者 static，根据需求设置 */
+  width: 100%;
+  background-color: #f8f8f8;
+  opacity: 0.8;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+  position: blocked;  /* 使导航栏固定在视口顶部 */
+  top: 0;            /* 距离顶部0 */
+  left: 0;           /* 距离左边0 */
+  z-index: 100;     /* 确保导航栏在其他内容之上 */
 }
 
 </style>
