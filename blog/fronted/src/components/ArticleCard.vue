@@ -28,8 +28,8 @@
 <script setup>
 import { ref } from 'vue';
 
-const title = "如何做一个博客";
-const summary = "这是博客文章的摘要。摘要可以是文章内容的一部分，帮助读者快速了解文章的主题。";
+const title = "文章测试";
+const summary = "这是博客文章的摘要？或者内容前部分？";
 const date = "2024年11月11日";
 const views = 142;
 const imageSrc = "/homeBackground.jpg"; // 图片路径
@@ -75,6 +75,7 @@ const goToArticle = () => {
   height: 200px;
   object-fit: cover;
   transition: height 0.3s ease;
+  object-position: top;
 }
 
 .article-card__image img.expanded {

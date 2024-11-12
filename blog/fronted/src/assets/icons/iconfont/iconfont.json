@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1969587",
+      "name": "网站",
+      "font_class": "wangzhan",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "2569860",
+      "name": "公告",
+      "font_class": "gonggao",
+      "unicode": "e67a",
+      "unicode_decimal": 59002
+    },
+    {
       "icon_id": "9566059",
       "name": "arrow-up-s-line",
       "font_class": "arrow-up-s-line",

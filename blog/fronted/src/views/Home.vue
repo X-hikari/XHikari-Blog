@@ -13,6 +13,8 @@
   <!-- 下方的内容部分 -->
   <div class="content-bottom">
     <div class="left-part">
+      <Announcement />
+      <WebSite />
       <UserCard /> <!-- 左侧部分：UserCard 卡片 -->
     </div>
     <div class="right-part">
@@ -27,6 +29,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import Wave from '@/components/Wave.vue'
 import UserCard from '@/components/UserCard.vue'
 import ArticleCard from '@/components/ArticleCard.vue'
+import Announcement from '@/components/Announcement.vue'
+import WebSite from '@/components/WebSite.vue'
 import { gsap } from 'gsap';
 
 const name = 'Home';
@@ -126,18 +130,21 @@ onUnmounted(() => {
 }
 
 .left-part {
-  width: 40%; /* 左侧占 2:5 的 40% */
+  width: 30%; /* 左侧部分占满 100% */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 15%;
-  margin-right: 1%;
+  flex-direction: column; /* 使子元素垂直排列 */
+  justify-content: flex-start; /* 垂直对齐 */
+  padding: 15px;
+  padding-left: 180px;
+  gap: 20px;
 }
 
 .right-part {
-  padding-right: 20%;
-  width: 60%; /* 右侧占 2:5 的 60% */
-  /* 你可以在这里添加其他的内容 */
+  width: 60%; /* 右侧部分占满 100% */
+  display: flex;
+  flex-direction: column; /* 使子元素垂直排列 */
+  justify-content: flex-start; /* 垂直对齐 */
+  padding: 15px;
 }
 
 @keyframes imageAnimation {
