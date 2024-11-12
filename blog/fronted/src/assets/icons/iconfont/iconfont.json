@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9566059",
+      "name": "arrow-up-s-line",
+      "font_class": "arrow-up-s-line",
+      "unicode": "e84f",
+      "unicode_decimal": 59471
+    },
+    {
+      "icon_id": "77156",
+      "name": "微信",
+      "font_class": "weixin",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "4936984",
+      "name": "QQ",
+      "font_class": "QQ",
+      "unicode": "e882",
+      "unicode_decimal": 59522
+    },
+    {
+      "icon_id": "4937000",
+      "name": "github-fill",
+      "font_class": "github-fill",
+      "unicode": "e885",
+      "unicode_decimal": 59525
+    },
+    {
+      "icon_id": "29524237",
+      "name": "bilibili-line",
+      "font_class": "bilibili-line",
+      "unicode": "e7d6",
+      "unicode_decimal": 59350
+    },
+    {
       "icon_id": "826948",
       "name": "登录",
       "font_class": "denglu-copy",

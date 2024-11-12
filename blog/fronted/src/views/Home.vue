@@ -1,26 +1,38 @@
 <template>
-  
   <!-- 顶部图片 -->
   <div class="background-image">
     <img :src="imageSrc" alt="Background Image" />
     <div class="theme">{{ themeText }}</div>
-    <!-- 随时间出现的文字 -->
     <div class="overlay-text">{{ displayedText }}</div>
     <div class="icon-circle">
       <i class="iconfont icon-arrow-down-s-line" style="font-size: 30px;"></i>
     </div>
+    <Wave />
   </div>
 
+  <!-- 下方的内容部分 -->
+  <div class="content-bottom">
+    <div class="left-part">
+      <UserCard /> <!-- 左侧部分：UserCard 卡片 -->
+    </div>
+    <div class="right-part">
+      <!-- 右侧部分：其他内容 -->
+      <ArticleCard />
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import Wave from '@/components/Wave.vue'
+import UserCard from '@/components/UserCard.vue'
+import ArticleCard from '@/components/ArticleCard.vue'
 import { gsap } from 'gsap';
 
 const name = 'Home';
 const imageSrc = ref('/homeBackground.jpg');
 const themeText = "Xhikari's Blog"
-const fullText = '你我在此相遇\n就是命运石之门的选择'; // 使用 \n 换行
+const fullText = '你与我在此相遇\n就是命运石之门的选择';
 const displayedText = ref(''); // 当前显示的文本
 
 // 控制文字显示的定时器
@@ -41,7 +53,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(interval);
 });
-
 </script>
 
 <style scoped>
@@ -72,7 +83,6 @@ onUnmounted(() => {
   font-size: 6em;
   font-weight: bold;
   text-align: center;
-  /* background-color: rgba(0, 0, 0, 0.5); */
   padding: 0.5em 1em;
   border-radius: 8px;
 }
@@ -91,10 +101,9 @@ onUnmounted(() => {
   white-space: pre-wrap; /* 保持换行效果 */
 }
 
-/* 圆形图标样式 */
 .icon-circle {
   position: absolute;
-  bottom: 10%; /* 距离底部 */
+  bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
   width: 40px;
@@ -105,6 +114,30 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.content-bottom {
+  display: flex;
+  width: 100%;
+  margin-top: 0px; /* 让下方内容稍微上移，接近图片下方 */
+  background-color: rgba(241, 249, 254, 1);
+  z-index: 2;
+  align-items: flex-start; /* 确保子元素顶部对齐 */
+}
+
+.left-part {
+  width: 40%; /* 左侧占 2:5 的 40% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 15%;
+  margin-right: 1%;
+}
+
+.right-part {
+  padding-right: 20%;
+  width: 60%; /* 右侧占 2:5 的 60% */
+  /* 你可以在这里添加其他的内容 */
 }
 
 @keyframes imageAnimation {
@@ -137,5 +170,4 @@ onUnmounted(() => {
     opacity: 1;
   }
 }
-
 </style>
