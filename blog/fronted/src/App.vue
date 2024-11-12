@@ -32,6 +32,8 @@
         </nav>
       </div>
     </header>
+
+    <TimeWatch />
   
     <div class="main-content">
     <!-- <div class="view"> -->
@@ -43,6 +45,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import TimeWatch from '@/components/TimeWatch.vue';
 
 const isDarkMode = ref(false);
 
@@ -249,7 +252,6 @@ button {
   position: blocked;  /* 使导航栏固定在视口顶部 */
   top: 0;            /* 距离顶部0 */
   left: 0;           /* 距离左边0 */
-  z-index: 100;     /* 确保导航栏在其他内容之上 */
 }
 
 </style>

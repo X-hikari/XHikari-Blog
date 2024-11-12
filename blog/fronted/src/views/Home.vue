@@ -20,6 +20,7 @@
     <div class="right-part">
       <!-- 右侧部分：其他内容 -->
       <ArticleCard />
+      <ArticleCard />
     </div>
   </div>
 </template>
@@ -145,6 +146,7 @@ onUnmounted(() => {
   flex-direction: column; /* 使子元素垂直排列 */
   justify-content: flex-start; /* 垂直对齐 */
   padding: 15px;
+  gap: 20px;
 }
 
 @keyframes imageAnimation {

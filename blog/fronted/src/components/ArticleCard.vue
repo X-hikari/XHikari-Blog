@@ -117,14 +117,12 @@ const goToArticle = () => {
 
 .summary-down-overlay,
 .summary-up-overlay {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%); /* 水平居中 */
+  left: 50%;  /* 初始位置居中 */
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  top: 80%;  /* 或者根据需要调整 */
+  top: 80%;
 }
 
 .icon-circle {
