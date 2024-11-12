@@ -15,7 +15,19 @@
     </div>
     <div class="article-card__content">
       <h3 class="article-card__title">{{ title }}</h3>
-      <p class="article-card__summary">{{ summary }}</p>
+      <p class="article-card__summary" :class="{ expanded: isSummaryExpanded }">
+        {{ summary }}
+      </p>
+      <div v-if="!isSummaryExpanded" class="summary-down-overlay" @click="expandSummary">
+        <div class="icon-circle">
+          <i class="iconfont icon-arrow-down-s-line"></i>
+        </div>
+      </div>
+      <div v-if="isSummaryExpanded" class="summary-up-overlay" @click="expandSummary">
+        <div class="icon-circle">
+          <i class="iconfont icon-arrow-up-s-line"></i>
+        </div>
+      </div>
       <div class="article-card__footer">
         <span class="article-card__date">{{ date }}</span>
         <span class="article-card__views">{{ views }} 阅读</span>
@@ -29,16 +41,21 @@
 import { ref } from 'vue';
 
 const title = "文章测试";
-const summary = "这是博客文章的摘要？或者内容前部分？";
+const summary = "这是博客文章的摘要？或者内容前部分？命运石之门 椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理";
 const date = "2024年11月11日";
 const views = 142;
 const imageSrc = "/homeBackground.jpg"; // 图片路径
 
 const isImageExpanded = ref(false);
+const isSummaryExpanded = ref(false);
 const imageElement = ref(null);
 
 const expandImage = () => {
   isImageExpanded.value = !isImageExpanded.value;
+};
+
+const expandSummary = () => {
+  isSummaryExpanded.value = !isSummaryExpanded.value;
 };
 
 const goToArticle = () => {
@@ -98,6 +115,18 @@ const goToArticle = () => {
   bottom: 5%;
 }
 
+.summary-down-overlay,
+.summary-up-overlay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  cursor: pointer;
+  top: 80%;  /* 或者根据需要调整 */
+}
+
 .icon-circle {
   display: inline-flex; /* 使用 inline-flex 来支持内容居中 */
   justify-content: center; /* 水平居中 */
@@ -127,8 +156,14 @@ const goToArticle = () => {
   font-size: 1em;
   color: #777;
   margin-bottom: 15px;
-  max-height: 60px;
-  overflow: hidden;
+  height: 60px;  /* 默认高度限制 */
+  overflow: hidden;  /* 内容溢出时隐藏 */
+  transition: height 0.3s ease;  /* 平滑过渡 */
+}
+
+.article-card__summary.expanded {
+  height: auto;  /* 展开后高度自适应 */
+  overflow: visible;  /* 展开后内容可见 */
 }
 
 .article-card__footer {
