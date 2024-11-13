@@ -70,6 +70,8 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     summary = models.TextField()
     status = models.CharField(max_length=20, choices=[('draft', 'Draft'), ('published', 'Published')], default='draft')
+    visits = models.IntegerField(default=0)
+    comment_num = models.IntegerField(default=0)
 
     # 外键
     user_id = models.ForeignKey(User, to_field='UID',  on_delete=models.CASCADE, related_name='articles')

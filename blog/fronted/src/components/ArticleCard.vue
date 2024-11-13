@@ -1,6 +1,7 @@
 <template>
   <div class="article-card">
-    <div class="article-card__image">
+    <!-- 图片部分，如果 imageSrc 不为空才显示 -->
+    <div v-if="imageSrc" class="article-card__image">
       <img :src="imageSrc" alt="Article Image" :class="{ 'expanded': isImageExpanded }" ref="imageElement" />
       <div v-if="!isImageExpanded" class="image-down-overlay" @click="expandImage">
         <div class="icon-circle">
@@ -13,6 +14,8 @@
         </div>
       </div>
     </div>
+    
+    <!-- 内容部分 -->
     <div class="article-card__content">
       <h3 class="article-card__title">{{ title }}</h3>
       <p class="article-card__summary" :class="{ expanded: isSummaryExpanded }">
@@ -28,39 +31,67 @@
           <i class="iconfont icon-arrow-up-s-line"></i>
         </div>
       </div>
+
+      <!-- 显示日期和阅读量 -->
       <div class="article-card__footer">
-        <span class="article-card__date">{{ date }}</span>
+        <span class="article-card__date">{{ formattedDate }}</span>
         <span class="article-card__views">{{ views }} 阅读</span>
       </div>
+
       <button @click="goToArticle" class="read-more-button">阅读更多</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
+import { format } from 'date-fns';  // 用于格式化日期
 
-const title = "文章测试";
-const summary = "这是博客文章的摘要？或者内容前部分？命运石之门 椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理椎名真由理";
-const date = "2024年11月11日";
-const views = 142;
-const imageSrc = "/homeBackground.jpg"; // 图片路径
+// 接收父组件传入的 props
+const props = defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  summary: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: String,
+    required: true
+  },
+  views: {
+    type: Number,
+    required: true
+  },
+  imageSrc: {
+    type: String,
+    default: ''  // 允许空字符串作为默认值
+  }
+});
 
 const isImageExpanded = ref(false);
 const isSummaryExpanded = ref(false);
 const imageElement = ref(null);
 
+// 扩展图片显示
 const expandImage = () => {
   isImageExpanded.value = !isImageExpanded.value;
 };
 
+// 扩展摘要显示
 const expandSummary = () => {
   isSummaryExpanded.value = !isSummaryExpanded.value;
 };
 
+// 跳转到文章详情
 const goToArticle = () => {
   alert("跳转到文章详情页面");
 };
+
+// 格式化日期
+const formattedDate = format(new Date(props.date), 'yyyy年MM月dd日');
 </script>
 
 <style scoped>
@@ -80,6 +111,7 @@ const goToArticle = () => {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
+/* 图片部分的样式 */
 .article-card__image {
   position: relative;
   width: 100%;
@@ -99,6 +131,7 @@ const goToArticle = () => {
   height: auto;
 }
 
+/* 控制图片展开的按钮 */
 .image-down-overlay,
 .image-up-overlay {
   position: absolute;
@@ -115,9 +148,10 @@ const goToArticle = () => {
   bottom: 5%;
 }
 
+/* 摘要部分 */
 .summary-down-overlay,
 .summary-up-overlay {
-  left: 50%;  /* 初始位置居中 */
+  left: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -126,17 +160,17 @@ const goToArticle = () => {
 }
 
 .icon-circle {
-  display: inline-flex; /* 使用 inline-flex 来支持内容居中 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
-  padding: 3px; /* 缩小圆形外框 */
+  padding: 3px;
 }
 
 .icon-circle i {
   color: white;
-  font-size: 1em; /* 缩小图标大小 */
+  font-size: 1em;
 }
 
 .article-card__content {
@@ -154,16 +188,18 @@ const goToArticle = () => {
   font-size: 1em;
   color: #777;
   margin-bottom: 15px;
-  height: 60px;  /* 默认高度限制 */
-  overflow: hidden;  /* 内容溢出时隐藏 */
-  transition: height 0.3s ease;  /* 平滑过渡 */
+  height: auto;
+  max-height: 60px;
+  overflow: hidden;
+  transition: height 0.3s ease;
 }
 
 .article-card__summary.expanded {
-  height: auto;  /* 展开后高度自适应 */
-  overflow: visible;  /* 展开后内容可见 */
+  max-height: none;
+  overflow: visible;
 }
 
+/* 底部内容 */
 .article-card__footer {
   display: flex;
   justify-content: space-between;

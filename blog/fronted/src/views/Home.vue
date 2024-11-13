@@ -19,14 +19,27 @@
     </div>
     <div class="right-part">
       <!-- 右侧部分：其他内容 -->
-      <ArticleCard />
-      <ArticleCard />
+      <div v-if="articles.length > 0">
+      <ArticleCard
+        v-for="(article, index) in articles"
+        :key="index"
+        :title="article.title"
+        :summary="article.summary"
+        :date="article.updated_at"
+        :views="article.visits"
+        :imageSrc="article.imageSrc"
+      />
+      </div>
+      <div v-else>
+        <p>没有找到文章数据。</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import axios from 'axios';  // 确保导入 axios
 import Wave from '@/components/Wave.vue'
 import UserCard from '@/components/UserCard.vue'
 import ArticleCard from '@/components/ArticleCard.vue'
@@ -36,9 +49,10 @@ import { gsap } from 'gsap';
 
 const name = 'Home';
 const imageSrc = ref('/homeBackground.jpg');
-const themeText = "Xhikari's Blog"
+const themeText = "Xhikari's Blog";
 const fullText = '与你在此的相遇\n就是命运石之门的选择';
 const displayedText = ref(''); // 当前显示的文本
+const articles = ref([]);  // 声明 articles
 
 // 控制文字显示的定时器
 let interval = null;
@@ -53,11 +67,22 @@ onMounted(() => {
       clearInterval(interval); // 完整显示后清除定时器
     }
   }, 200);
+
+  // 获取文章数据
+  axios.get('http://localhost:8001/api/articles/')
+    .then(response => {
+      articles.value = response.data;  // 更新 articles 数据
+      // alert(articles.value.length);
+    })
+    .catch(error => {
+      console.error('Error fetching articles:', error);
+    });
 });
 
 onUnmounted(() => {
   clearInterval(interval);
 });
+
 </script>
 
 <style scoped>
