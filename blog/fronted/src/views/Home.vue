@@ -37,7 +37,7 @@ import { gsap } from 'gsap';
 const name = 'Home';
 const imageSrc = ref('/homeBackground.jpg');
 const themeText = "Xhikari's Blog"
-const fullText = '你与我在此相遇\n就是命运石之门的选择';
+const fullText = '与你在此的相遇\n就是命运石之门的选择';
 const displayedText = ref(''); // 当前显示的文本
 
 // 控制文字显示的定时器
