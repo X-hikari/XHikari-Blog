@@ -19,7 +19,7 @@
     </div>
     <div class="right-part">
       <!-- 右侧部分：其他内容 -->
-      <div v-if="articles.length > 0">
+      <!-- <div v-if="articles.length > 0"> -->
       <ArticleCard
         v-for="(article, index) in articles"
         :key="index"
@@ -29,10 +29,10 @@
         :views="article.visits"
         :imageSrc="article.imageSrc"
       />
-      </div>
-      <div v-else>
+      <!-- </div> -->
+      <!-- <div v-else>
         <p>没有找到文章数据。</p>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -156,7 +156,7 @@ onUnmounted(() => {
 }
 
 .left-part {
-  width: 30%; /* 左侧部分占满 100% */
+  width: 30%; /* 左侧部分占 30% */
   display: flex;
   flex-direction: column; /* 使子元素垂直排列 */
   justify-content: flex-start; /* 垂直对齐 */
@@ -166,12 +166,12 @@ onUnmounted(() => {
 }
 
 .right-part {
-  width: 60%; /* 右侧部分占满 100% */
+  width: 60%; /* 右侧部分占 60% */
   display: flex;
   flex-direction: column; /* 使子元素垂直排列 */
   justify-content: flex-start; /* 垂直对齐 */
   padding: 15px;
-  gap: 20px;
+  gap: 20px;     /* 必须是直接的子级才能生效 */
 }
 
 @keyframes imageAnimation {

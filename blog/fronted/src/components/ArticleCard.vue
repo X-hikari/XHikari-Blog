@@ -2,8 +2,9 @@
   <div class="article-card">
     <!-- 图片部分，如果 imageSrc 不为空才显示 -->
     <div v-if="imageSrc" class="article-card__image">
-      <img :src="imageSrc" alt="Article Image" :class="{ 'expanded': isImageExpanded }" ref="imageElement" />
-      <div v-if="!isImageExpanded" class="image-down-overlay" @click="expandImage">
+      <img :src="imageSrc" alt="Article Image" :class="{ 'expanded': isImageExpanded }" ref="imageElement" @load="onImageLoad" />
+      <!-- 只有图片实际高度大于200px时才显示展开按钮 -->
+      <div v-if="imageHeight > 200 && !isImageExpanded" class="image-down-overlay" @click="expandImage">
         <div class="icon-circle">
           <i class="iconfont icon-arrow-down-s-line"></i>
         </div>
@@ -18,10 +19,11 @@
     <!-- 内容部分 -->
     <div class="article-card__content">
       <h3 class="article-card__title">{{ title }}</h3>
-      <p class="article-card__summary" :class="{ expanded: isSummaryExpanded }">
+      <p class="article-card__summary" :class="{ expanded: isSummaryExpanded }" ref="summaryElement">
         {{ summary }}
       </p>
-      <div v-if="!isSummaryExpanded" class="summary-down-overlay" @click="expandSummary">
+      <!-- 只有摘要高度大于60px时才显示展开按钮 -->
+      <div v-if="summaryHeight > 60 && !isSummaryExpanded" class="summary-down-overlay" @click="expandSummary">
         <div class="icon-circle">
           <i class="iconfont icon-arrow-down-s-line"></i>
         </div>
@@ -44,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { format } from 'date-fns';  // 用于格式化日期
 
 // 接收父组件传入的 props
@@ -74,6 +76,11 @@ const props = defineProps({
 const isImageExpanded = ref(false);
 const isSummaryExpanded = ref(false);
 const imageElement = ref(null);
+const summaryElement = ref(null);
+
+// 用于存储图片和摘要的实际高度
+const imageHeight = ref(0);
+const summaryHeight = ref(0);
 
 // 扩展图片显示
 const expandImage = () => {
@@ -92,6 +99,21 @@ const goToArticle = () => {
 
 // 格式化日期
 const formattedDate = format(new Date(props.date), 'yyyy年MM月dd日');
+
+// 获取图片和摘要的实际高度
+const onImageLoad = () => {
+  if (imageElement.value) {
+    imageHeight.value = imageElement.value.naturalHeight; // 获取图片的自然高度
+  }
+};
+
+onMounted(() => {
+  nextTick(() => {
+    if (summaryElement.value) {
+      summaryHeight.value = summaryElement.value.scrollHeight;
+    }
+  });
+});
 </script>
 
 <style scoped>
