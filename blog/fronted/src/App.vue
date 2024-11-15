@@ -1,10 +1,7 @@
 <template>
   <div class="#app">
-
     <header class="header">
       <div class="header-content">
-        
-        <!-- 左侧：Logo部分和登录及日夜切换按钮 -->
         <div class="left-actions">
           <div class="logo">
             <img src="@/assets/logo.svg" alt="Logo" />
@@ -15,7 +12,6 @@
           </button>
         </div>
   
-        <!-- 右侧：导航链接 -->
         <nav class="nav-links">
           <router-link to="/home"><i class="iconfont icon-zhuye"></i> 主页</router-link>
           <router-link to="/classify"><i class="iconfont icon-icon"></i> 分类</router-link>
@@ -34,20 +30,26 @@
     </header>
 
     <TimeWatch />
+
+    <!-- 动态标题 -->
+    <div v-if="showTitle" class="page-title">
+      <div class="page-title-text">Xhikari's blog</div> 
+    </div>
   
     <div class="main-content">
-    <!-- <div class="view"> -->
       <router-view></router-view>
     </div>
   </div>
-
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
 import TimeWatch from '@/components/TimeWatch.vue';
 
 const isDarkMode = ref(false);
+const route = useRoute(); // 获取当前路由对象
+const showTitle = ref(false); // 用于控制标题显示
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
@@ -60,7 +62,19 @@ onMounted(() => {
     isDarkMode.value = true;
   }
 });
+
+watch(route, (newRoute) => {
+  // 每次路由变化时，更新背景图显示的状态
+  if (newRoute.path === '/home') {
+    document.querySelector('.main-content').classList.add('no-background');
+    showTitle.value = false; // 在首页不显示标题
+  } else {
+    document.querySelector('.main-content').classList.remove('no-background');
+    showTitle.value = true; // 非首页显示标题
+  }
+});
 </script>
+
 
 <style scoped>
 .header {
@@ -72,9 +86,9 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;  /* 使导航栏固定在视口顶部 */
-  top: 0;            /* 距离顶部0 */
-  left: 0;           /* 距离左边0 */
+  position: fixed;  
+  top: 0;        
+  left: 0;
   z-index: 1000;     /* 确保导航栏在其他内容之上 */
 }
 
@@ -114,11 +128,11 @@ onMounted(() => {
 }
 
 .nav-links a:hover {
-  color: #007bff; /* 鼠标悬停时字体变为蓝色 */
+  color: #007bff; 
 }
 
 .nav-links i {
-  margin-right: 8px; /* 图标和文本之间的间距 */
+  margin-right: 8px;
 }
 
 .search-link {
@@ -130,7 +144,7 @@ onMounted(() => {
 .search-input {
   margin-left: 8px;
   padding: 5px 10px;
-  border-radius: 20px; /* 圆角效果 */
+  border-radius: 20px;
   border: 1px solid #ccc;
   background-color: transparent; /* 透明背景 */
   color: #333;
@@ -191,7 +205,7 @@ onMounted(() => {
 }
 
 .login:hover {
-  color: #007bff; /* 鼠标悬停时字体变为蓝色 */
+  color: #007bff;
 }
 
 button {
@@ -240,18 +254,50 @@ button {
   color: white;
 }
 
+/* Fullscreen background image */
 .main-content {
-  position: relative; /* 或者 static，根据需求设置 */
+  position: relative;
   width: 100%;
-  background-color: #f8f8f8;
-  opacity: 0.8;
+  /* background-color: rgba(248, 248, 248, 0.8); */
+  /* opacity: 0.8; */
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('@/assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;  /* 确保背景图在内容后面 */
+  /* opacity: 0.8;  */
+}
+
+.main-content.no-background::before {
+  display: none; /* 如果是首页，隐藏背景图 */
+}
+
+.page-title {
+  display: flex;
   justify-content: center;
   align-items: center;
-  position: blocked;  /* 使导航栏固定在视口顶部 */
-  top: 0;            /* 距离顶部0 */
-  left: 0;           /* 距离左边0 */
+  width: 100%;
+  height: 40%;
+  font-size: 2rem;
+  text-align: center;
+  padding: 10px;
+}
+
+.page-title .page-title-text {
+  font-size: 48px;
+  font-weight: bold;
+  color: #8683e8;
+  z-index: 1;
 }
 
 </style>

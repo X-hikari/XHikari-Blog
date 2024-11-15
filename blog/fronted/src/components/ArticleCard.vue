@@ -98,7 +98,7 @@ const goToArticle = () => {
 };
 
 // 格式化日期
-const formattedDate = format(new Date(props.date), 'yyyy年MM月dd日');
+const formattedDate = format(new Date(props.date), 'yyyy年MM月dd日 HH:mm:SS');
 
 // 获取图片和摘要的实际高度
 const onImageLoad = () => {
@@ -125,7 +125,7 @@ onMounted(() => {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+  cursor: default;
 }
 
 .article-card:hover {

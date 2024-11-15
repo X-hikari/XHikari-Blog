@@ -55,6 +55,9 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     bannar_id = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
 
+    # 外键关联父类分类（如果有），树状结构
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subcategories')
+
     class Meta:
         indexes = [
             models.Index(fields=['name']),
@@ -62,6 +65,35 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_children_recursive(self):
+        """递归获取当前分类的所有子分类及其子分类"""
+        children = self.subcategories.all()
+        result = []
+        for child in children:
+            # 对每个子类进行递归
+            child_data = {
+                'id': child.id,
+                'name': child.name,
+                'children': child.get_children_recursive(),
+                'article_count': child.articles.count()  # 统计该分类下的文章数量
+            }
+            result.append(child_data)
+        return result
+
+    def get_children(self):
+        """获取当前分类的所有子分类"""
+        return self.subcategories.all()
+
+    def get_ancestors(self):
+        """递归获取当前分类的所有父分类（祖先）"""
+        ancestors = []
+        parent = self.parent
+        while parent:
+            ancestors.append(parent)
+            parent = parent.parent
+        return ancestors[::-1]  # 返回从上到下的父分类列表
+
 
 class Article(models.Model):
     title = models.CharField(max_length=200, unique=True)

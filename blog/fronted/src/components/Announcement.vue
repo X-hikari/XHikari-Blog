@@ -14,7 +14,7 @@
   import { ref } from 'vue';
   
   const title = "公告栏";
-  const content = "这里是公告栏喵！";
+  const content = "这里是公告栏喵！这里是小肖的赛博小窝，正在搭建喵！";
   </script>
   
   <style scoped>

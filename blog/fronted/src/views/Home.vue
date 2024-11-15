@@ -18,10 +18,9 @@
       <UserCard /> <!-- 左侧部分：UserCard 卡片 -->
     </div>
     <div class="right-part">
-      <!-- 右侧部分：其他内容 -->
-      <!-- <div v-if="articles.length > 0"> -->
+      <!-- 右侧部分：文章卡片 -->
       <ArticleCard
-        v-for="(article, index) in articles"
+        v-for="(article, index) in paginatedArticles"
         :key="index"
         :title="article.title"
         :summary="article.summary"
@@ -29,50 +28,51 @@
         :views="article.visits"
         :imageSrc="article.imageSrc"
       />
-      <!-- </div> -->
-      <!-- <div v-else>
-        <p>没有找到文章数据。</p>
-      </div> -->
+      <!-- 分页控件 -->
+      <Pagination 
+        :page="page" 
+        :totalPages="totalPages" 
+        @changePage="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import axios from 'axios';  // 确保导入 axios
 import Wave from '@/components/Wave.vue'
 import UserCard from '@/components/UserCard.vue'
 import ArticleCard from '@/components/ArticleCard.vue'
 import Announcement from '@/components/Announcement.vue'
 import WebSite from '@/components/WebSite.vue'
-import { gsap } from 'gsap';
+import Pagination from '@/components/Pagination.vue'; // 引入分页组件
 
-const name = 'Home';
 const imageSrc = ref('/homeBackground.jpg');
 const themeText = "Xhikari's Blog";
 const fullText = '与你在此的相遇\n就是命运石之门的选择';
-const displayedText = ref(''); // 当前显示的文本
+const displayedText = ref('');
 const articles = ref([]);  // 声明 articles
+const page = ref(1);  // 当前页数
+const pageSize = 4;  // 每页显示 8 个文章
 
 // 控制文字显示的定时器
 let interval = null;
 
 onMounted(() => {
-  let index = 0; // 当前显示的字符索引
+  let index = 0;
   interval = setInterval(() => {
     if (index < fullText.length) {
-      displayedText.value += fullText[index]; // 每次添加一个字符
+      displayedText.value += fullText[index];
       index++;
     } else {
-      clearInterval(interval); // 完整显示后清除定时器
+      clearInterval(interval);
     }
   }, 200);
 
   // 获取文章数据
   axios.get('http://localhost:8001/api/articles/')
     .then(response => {
-      articles.value = response.data;  // 更新 articles 数据
-      // alert(articles.value.length);
+      articles.value = response.data;
     })
     .catch(error => {
       console.error('Error fetching articles:', error);
@@ -83,6 +83,22 @@ onUnmounted(() => {
   clearInterval(interval);
 });
 
+// 计算分页后的文章
+const totalPages = computed(() => {
+  return Math.ceil(articles.value.length / pageSize);
+});
+
+const paginatedArticles = computed(() => {
+  const startIndex = (page.value - 1) * pageSize;
+  return articles.value.slice(startIndex, startIndex + pageSize);
+});
+
+// 改变当前页
+const changePage = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    page.value = newPage;
+  }
+};
 </script>
 
 <style scoped>
@@ -125,10 +141,10 @@ onUnmounted(() => {
   color: white;
   font-size: 2em;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.5); /* 背景遮罩以提升文字可读性 */
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 0.5em 1em;
   border-radius: 8px;
-  white-space: pre-wrap; /* 保持换行效果 */
+  white-space: pre-wrap;
 }
 
 .icon-circle {
@@ -149,29 +165,54 @@ onUnmounted(() => {
 .content-bottom {
   display: flex;
   width: 100%;
-  margin-top: 0px; /* 让下方内容稍微上移，接近图片下方 */
+  margin-top: 0px;
   background-color: rgba(241, 249, 254, 1);
   z-index: 2;
-  align-items: flex-start; /* 确保子元素顶部对齐 */
+  align-items: flex-start;
 }
 
 .left-part {
-  width: 30%; /* 左侧部分占 30% */
+  width: 30%;
   display: flex;
-  flex-direction: column; /* 使子元素垂直排列 */
-  justify-content: flex-start; /* 垂直对齐 */
+  flex-direction: column;
+  justify-content: flex-start;
   padding: 15px;
   padding-left: 180px;
   gap: 20px;
 }
 
 .right-part {
-  width: 60%; /* 右侧部分占 60% */
+  width: 60%;
   display: flex;
-  flex-direction: column; /* 使子元素垂直排列 */
-  justify-content: flex-start; /* 垂直对齐 */
+  flex-direction: column;
+  justify-content: flex-start;
   padding: 15px;
-  gap: 20px;     /* 必须是直接的子级才能生效 */
+  gap: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 10px 20px;
+  background-color: #5e3c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.PageText {
+  font-size: 20px;
 }
 
 @keyframes imageAnimation {
