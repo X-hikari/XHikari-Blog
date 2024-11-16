@@ -254,7 +254,6 @@ button {
   color: white;
 }
 
-/* Fullscreen background image */
 .main-content {
   position: relative;
   width: 100%;
@@ -287,7 +286,7 @@ button {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 40%;
+  height: 30%;
   font-size: 2rem;
   text-align: center;
   padding: 10px;

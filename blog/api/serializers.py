@@ -16,14 +16,18 @@ class ArticleAllSerializer(serializers.ModelSerializer):
 
 class CategoryAllSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()  # 获取子分类
+    parent = serializers.SerializerMethodField()  # 获取祖先分类
     article_count = serializers.SerializerMethodField()  # 获取文章数量
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'children', 'article_count']
-
+        fields = ['id', 'name', 'description', 'children', 'parent', 'article_count']
+    
     def get_children(self, obj):
         return obj.get_children_recursive()
+
+    def get_parent(self, obj):
+        return obj.get_ancestors()
 
     def get_article_count(self, obj):
         # 计算当前分类的文章数量

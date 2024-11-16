@@ -4,7 +4,7 @@
     <div class="user-card__cover">
       <img src="/UserCard/background.jpg" alt="Cover Image" class="cover-image" />
       <div class="overlay">
-        <img src="/homeBackground.jpg" alt="Avatar" class="avatar" />
+        <img src="/UserCard/avatar_xhikari.png" alt="Avatar" class="avatar" />
         <h3 class="username">小肖的个人博客</h3>
         <p class="status">学不动了、学不懂了、学不会了</p>
       </div>
@@ -77,8 +77,8 @@ const handleIconClick = (platform) => {
 }
 
 .avatar {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 3px solid white;
 }

@@ -2,11 +2,17 @@
   <div class="classify">
     <div class="main-content">
       <div class="left-part">
-        这是左边部分
+        <div class="sticky-header">
+          <Catalogues 
+            :directories="categorys"
+            :activeRoot="activeRoot"      
+          />
+        </div>
       </div>
       <div class="right-part">
         <ClassifyCard 
           :categories="categorys"
+          @update-active-root="updateActiveRoot"
           />
       </div>
     </div>
@@ -17,9 +23,11 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import ClassifyCard from '@/components/Classify/ClassifyCard.vue';
+import Catalogues from '@/components/Catalogues/Catalogues.vue';
 
-const name = 'classify';
+const name = 'Classify';
 const categorys = ref([]);
+const activeRoot = ref(null); // 当前根目录
 
 onMounted(() => {
   // 获取所有分类数据
@@ -31,6 +39,12 @@ onMounted(() => {
       console.error('Error fetching categorys:', error);
     });
 });
+
+// 更新当前根目录
+const updateActiveRoot = (rootId) => {
+  // alert(rootId);
+  activeRoot.value = rootId;
+};
 
 </script>
 
@@ -51,8 +65,17 @@ onMounted(() => {
 
 .left-part {
   width: 30%; /* 左边部分占据3的比例 */
-  background-color: #f0f0f0; /* 仅为示例背景色 */
+  position: relative; /* 确保 sticky 能工作 */
+  height: 100vh; /* 确保左边部分高度足够 */
 }
+
+.sticky-header {
+  position: -webkit-sticky; /* Safari 支持的前缀 */
+  position: sticky;
+  top: 50px; /* 设置距离页面顶部的固定距离 */
+  padding: 10px;
+}
+
 
 .right-part {
   width: 65%; /* 右边部分占据7的比例 */

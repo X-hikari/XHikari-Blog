@@ -76,6 +76,7 @@ class Category(models.Model):
                 'id': child.id,
                 'name': child.name,
                 'children': child.get_children_recursive(),
+                'parent': child.get_ancestors(),
                 'article_count': child.articles.count()  # 统计该分类下的文章数量
             }
             result.append(child_data)
@@ -90,7 +91,7 @@ class Category(models.Model):
         ancestors = []
         parent = self.parent
         while parent:
-            ancestors.append(parent)
+            ancestors.append(parent.id)
             parent = parent.parent
         return ancestors[::-1]  # 返回从上到下的父分类列表
 
