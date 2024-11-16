@@ -5,7 +5,8 @@
         <div class="sticky-header">
           <Catalogues 
             :directories="categorys"
-            :activeRoot="activeRoot"      
+            :activeRoot="activeRoot"
+            :parentId="parentId"      
           />
         </div>
       </div>
@@ -27,6 +28,7 @@ import Catalogues from '@/components/Catalogues/Catalogues.vue';
 
 const name = 'Classify';
 const categorys = ref([]);
+const parentId = ref([]);
 const activeRoot = ref(null); // 当前根目录
 
 onMounted(() => {
@@ -40,10 +42,29 @@ onMounted(() => {
     });
 });
 
+function findCategoryById(data, targetId) {
+  for (const item of data) {
+    if (item.id === targetId) {
+      return item; // 找到目标 ID，返回对应的目录对象
+    }
+    // 如果有子节点，递归搜索子节点
+    if (item.children && item.children.length > 0) {
+      const result = findCategoryById(item.children, targetId);
+      if (result) {
+        return result; // 如果在子节点中找到，直接返回结果
+      }
+    }
+  }
+  return null; // 如果找不到，返回 null
+}
+
 // 更新当前根目录
 const updateActiveRoot = (rootId) => {
   // alert(rootId);
   activeRoot.value = rootId;
+  const result = findCategoryById(categorys.value, activeRoot.value);
+  parentId.value = result.parent;
+  console.log("parentId", parentId.value);
 };
 
 </script>

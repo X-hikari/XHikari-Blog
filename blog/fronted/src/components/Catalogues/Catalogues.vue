@@ -1,15 +1,16 @@
 <template>
   <div class="catalogues">
     <div class="sticky-header">
-        <div class="Cataloguestitle" @click="handle()">文章目录</div>
+        <div class="Cataloguestitle">文章目录</div>
         <ul>
         <li v-for="(catalogue, index) in directories" :key="index">
-          <span :class="{'active': shouldcolor(catalogue.id)}" @click="parent()">{{ catalogue.name }}</span>
+          <span :class="{'active': shouldcolor(catalogue.id)}">{{ catalogue.name }}</span>
           <!-- 判断是否展开子目录 -->
           <CatalogueItem 
-            v-if="catalogue.children && catalogue.children.length && shouldExpand(catalogue.id)" 
+            v-if="shouldExpand(catalogue.id)" 
             :directories="catalogue.children" 
             :activeRoot="activeRoot"
+            :parentId="parentId"     
           />
         </li>
       </ul>
@@ -19,7 +20,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useParentIdStore } from '@/stores/parentID';
 import CatalogueItem from '@/components/Catalogues/CatalogueItem.vue';
 
 // 定义组件的 prop
@@ -31,33 +31,18 @@ const props = defineProps({
   activeRoot: {
     type: Number, // 根目录 ID
     required: false
+  },
+  parentId: {
+    type: Array,
+    required: false
   }
 });
 
-const handle= () => {
-  alert(props.activeRoot);
-}
-
-const parent= () => {
-  console.log(parentIdStore.parentId);
-}
-
-// 使用 Pinia Store
-const parentIdStore = useParentIdStore();
-
 // 判断当前目录是否应该展开
 const shouldExpand = (catalogueId) => {
-  if (props.activeRoot === catalogueId) {
-    if (props.activeRoot !== parentIdStore.activeRoot) {
-      parentIdStore.setParentId(catalogueId, props.directories);
-    }
+  if( props.activeRoot === catalogueId || props.parentId.includes(catalogueId)) {
     return true;
   }
-  if (parentIdStore.children.includes(props.activeRoot)) {
-    return true;
-  }
-  // 检查当前目录是否是激活目录的祖先
-  return parentIdStore.isAncestor(catalogueId)
 };
 
 const shouldcolor = (catalogueId) => {
