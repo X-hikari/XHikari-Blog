@@ -11,6 +11,7 @@
       <ClassifyItem 
         v-if="category.children && category.children.length > 0" 
         :categories="category.children"
+        :jumpRoot="jumpRoot"
         :ref="el => { if (el) childComponents[category.id] = el; }"
       />
     </li>
@@ -18,7 +19,7 @@
 </template>
   
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import ClassifyItem from '@/components/Classify/ClassyItem.vue';
 
 const props = defineProps({
@@ -26,10 +27,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  activeRoot: {
+  jumpRoot: {
     type: Number,
     required: true
-  }
+  },
 });
 
 const emit = defineEmits(['update-active-root']);
@@ -37,6 +38,24 @@ const emit = defineEmits(['update-active-root']);
 const categoryItems = ref([]);
 const childComponents = ref({});
 const buffer = 50; // 触发位置距离顶部的缓冲距离
+
+const scrollToCategory = (categoryId) => {
+  nextTick(() => {
+    const targetIndex = props.categories.findIndex((category) => category.id === categoryId);
+    if (targetIndex !== -1 && categoryItems.value[targetIndex]) {
+      const targetElement = categoryItems.value[targetIndex];
+      const rect = targetElement.getBoundingClientRect();
+      // 获取目标元素的顶部距离文档的偏移量
+      const offsetTop = rect.top + window.scrollY;
+
+      // 滚动到目标位置，距离顶部50px
+      window.scrollTo({
+        top: offsetTop - buffer+5, // 调整50px
+        behavior: 'smooth',  // 平滑滚动
+      });
+    }
+  });
+};
 
 const checkCategories = () => {
   let result = -1;
@@ -52,27 +71,39 @@ const checkCategories = () => {
       if (rect.top <= buffer) {
         // emit('update-active-root', category.id);
         result = category.id;
-        console.log("result", result);
+        // console.log("result", result);
 
         // 如果目录有子目录，处理子目录
         if (category.children && category.children.length > 0) {
           const specificChild = childComponents.value[category.id];
-          console.log("进入子目录", specificChild);
+          // console.log("进入子目录", specificChild);
           if (specificChild) {
-            console.log("temp1", temp);
+            // console.log("temp1", temp);
             temp = specificChild.checkCategories(); // 确保子组件方法可用
-            console.log("temp2", temp);
+            // console.log("temp2", temp);
             if (temp && temp !== -1) {
               result = temp;
             }
           }
         }
-        console.log("每次返回的result", result);
+        // console.log("每次返回的result", result);
       }
     }
   });
   return result;
 };
+
+// 监听 jumpRoot
+watch(
+  () => props.jumpRoot,
+  (newJumpRoot) => {
+    // console.log(newJumpRoot);
+    if (newJumpRoot && props.categories.some(category => category.id === newJumpRoot)) {
+    // if (newJumpRoot) {
+      scrollToCategory(newJumpRoot); // 滚动到对应分类
+    }
+  }
+);
 
 // 使用 defineExpose 暴露方法
 defineExpose({

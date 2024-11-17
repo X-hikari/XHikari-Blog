@@ -14,6 +14,7 @@
           <ClassifyItem 
             v-if="category.children && category.children.length > 0" 
             :categories="category.children"
+            :jumpRoot="jumpRoot"
             :ref="el => { if (el) childComponents[category.id] = el; }"
           />
         </li>
@@ -23,19 +24,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import ClassifyItem from '@/components/Classify/ClassyItem.vue';
-import { eachMinuteOfInterval } from 'date-fns';
 
 const props = defineProps({
   categories: {
     type: Array,
     required: true
   },
-  activeRoot: {
+  jumpRoot: {
     type: Number,
     required: true
-  }
+  },
 });
 
 const emit = defineEmits(['update-active-root']);
@@ -44,6 +44,24 @@ const emit = defineEmits(['update-active-root']);
 const categoryItems = ref([]);
 const childComponents = ref({});
 const buffer = 50; // 触发位置距离顶部的缓冲距离
+
+const scrollToCategory = (categoryId) => {
+  nextTick(() => {
+    const targetIndex = props.categories.findIndex((category) => category.id === categoryId);
+    if (targetIndex !== -1 && categoryItems.value[targetIndex]) {
+      const targetElement = categoryItems.value[targetIndex];
+      const rect = targetElement.getBoundingClientRect();
+      // 获取目标元素的顶部距离文档的偏移量
+      const offsetTop = rect.top + window.scrollY;
+
+      // 滚动到目标位置，距离顶部50px
+      window.scrollTo({
+        top: offsetTop - buffer+5, // 调整50px
+        behavior: 'smooth',  // 平滑滚动
+      });
+    }
+  });
+};
 
 // 滚动事件处理函数
 const handleScroll = () => {
@@ -60,13 +78,13 @@ const handleScroll = () => {
           // 如果目录有子目录，处理子目录
           if (category.children && category.children.length > 0) {
             const specificChild = childComponents.value[category.id];
-            console.log("进入子目录", specificChild);
+            // console.log("进入子目录", specificChild);
             if (specificChild) {
               const result = specificChild.checkCategories(); // 确保子组件方法可用
-              console.log("最外层的result", result);
+              // console.log("最外层的result", result);
               if (result !== -1) {
                 emit('update-active-root', result);
-                console.log("fin", result);
+                // console.log("fin", result);
               }
             }
           }
@@ -78,6 +96,17 @@ const handleScroll = () => {
   // 调用函数，传入顶层目录（props.categories）
   checkCategories(props.categories, categoryItems);
 };
+
+// 监听 jumpRoot
+watch(
+  () => props.jumpRoot,
+  (newJumpRoot) => {
+    if (newJumpRoot && props.categories.some(category => category.id === newJumpRoot)) {
+    // if (newJumpRoot) {
+      scrollToCategory(newJumpRoot); // 滚动到对应分类
+    }
+  }
+);
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);

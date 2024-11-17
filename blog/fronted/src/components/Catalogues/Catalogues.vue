@@ -4,13 +4,14 @@
         <div class="Cataloguestitle">文章目录</div>
         <ul>
         <li v-for="(catalogue, index) in directories" :key="index">
-          <span :class="{'active': shouldcolor(catalogue.id)}">{{ catalogue.name }}</span>
+          <span :class="['Text' ,{'active': shouldcolor(catalogue.id)}]" @click="jumpRoot(catalogue.id)">{{ catalogue.name }}</span>
           <!-- 判断是否展开子目录 -->
           <CatalogueItem 
             v-if="shouldExpand(catalogue.id)" 
             :directories="catalogue.children" 
             :activeRoot="activeRoot"
-            :parentId="parentId"     
+            :parentId="parentId"
+            @update-jump-root="updateJumpRoot"     
           />
         </li>
       </ul>
@@ -37,6 +38,15 @@ const props = defineProps({
     required: false
   }
 });
+
+const emit = defineEmits(['update-jump-root']);
+const jumpRoot = (catalogueId) => {
+  emit('update-jump-root', catalogueId);
+};
+
+const updateJumpRoot = (catalogueId) => {
+  emit('update-jump-root', catalogueId);
+}
 
 // 判断当前目录是否应该展开
 const shouldExpand = (catalogueId) => {
@@ -88,8 +98,15 @@ ul {
   color: #34345f
 }
 
-span {
+.Text {
+  display: block;
+  width: 100%;
   font-weight: bold;
+}
+
+.Text:hover {
+  background-color: #e9f3fc;
+  cursor: pointer;
 }
 
 .active {

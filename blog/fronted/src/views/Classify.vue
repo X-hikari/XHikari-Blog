@@ -7,12 +7,14 @@
             :directories="categorys"
             :activeRoot="activeRoot"
             :parentId="parentId"      
+            @update-jump-root="updateJumpRoot"
           />
         </div>
       </div>
       <div class="right-part">
         <ClassifyCard 
           :categories="categorys"
+          :jumpRoot="jumpRoot"
           @update-active-root="updateActiveRoot"
           />
       </div>
@@ -29,6 +31,7 @@ import Catalogues from '@/components/Catalogues/Catalogues.vue';
 const name = 'Classify';
 const categorys = ref([]);
 const parentId = ref([]);
+const jumpRoot = ref(null);
 const activeRoot = ref(null); // 当前根目录
 
 onMounted(() => {
@@ -64,7 +67,14 @@ const updateActiveRoot = (rootId) => {
   activeRoot.value = rootId;
   const result = findCategoryById(categorys.value, activeRoot.value);
   parentId.value = result.parent;
-  console.log("parentId", parentId.value);
+  // console.log("parentId", parentId.value);
+};
+
+// 更新当前跳转目录
+const updateJumpRoot = (rootId) => {
+  jumpRoot.value = rootId;
+  console.log(jumpRoot.value);
+  // console.log("parentId", parentId.value);
 };
 
 </script>
