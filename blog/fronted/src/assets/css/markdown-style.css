@@ -68,6 +68,11 @@
   margin-bottom: 15px;
 }
 
+.markdown-body img {
+  width: 100%;
+  object-fit: contain;    /* 图片完整铺满，可能裁剪部分超出 */
+}
+
 .markdown-body pre {
   overflow: hidden !important;
   margin-bottom: 20px;

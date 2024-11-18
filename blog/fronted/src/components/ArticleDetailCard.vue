@@ -39,8 +39,9 @@
 import { ref, onMounted, nextTick, watch, onBeforeUnmount } from 'vue';
 import MarkdownIt from 'markdown-it';
 import Prism from 'prismjs';
-import { format } from 'date-fns';
 import '@/assets/css/markdown-style.css';
+import "@/utils/mathjax";
+import "mathjax/es5/tex-svg"; 
 
 const props = defineProps({
   data: {
@@ -54,7 +55,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update-active-root']);
-const md = new MarkdownIt();
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+});
 const htmlContent = ref('');
 const headings = ref([]);
 const buffer = 50; // 触发位置距离顶部的缓冲距离
@@ -67,6 +71,7 @@ onMounted(() => {
 // 解析 markdown 内容并渲染
 onMounted(() => {
   // 渲染 markdown 内容为 HTML
+  window.MathJax.startup.defaultReady();
   htmlContent.value = md.render(props.data.content);
 
   // 提取所有标题信息
@@ -190,7 +195,7 @@ onBeforeUnmount(() => {
 }
 
 .article-summary {
-  font-size: 1.2em;
+  font-size: 1em;
   margin: 20px 0;
   color: #555;
   line-height: 1.5;

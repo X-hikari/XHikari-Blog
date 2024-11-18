@@ -31,7 +31,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         return None
 
     def get_category(self, obj):
-        if obj.category_id and obj.bannar_id.file:
+        if obj.category_id:
             return obj.category_id.name
         return None
 
