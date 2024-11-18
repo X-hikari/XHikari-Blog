@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "lib": ["ES6", "DOM"],  // 指定包含 ES6 标准库和 DOM 库，确保 Promise 被识别
     "paths": {
       "@/*": ["./src/*"]
     }

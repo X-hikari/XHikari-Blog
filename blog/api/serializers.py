@@ -14,6 +14,27 @@ class ArticleAllSerializer(serializers.ModelSerializer):
             return obj.bannar_id.file.url  # 返回图片的URL
         return None
 
+class ArticleSerializer(serializers.ModelSerializer):
+    banner_url = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = Article
+        fields = '__all__'  # 保留所有字段
+        extra_fields = ['category', 'banner_url']
+
+    def get_banner_url(self, obj):
+        if obj.bannar_id and obj.bannar_id.file:
+            return obj.bannar_id.file.url  # 确保返回的是图片文件的 URL
+        return None
+
+    def get_category(self, obj):
+        if obj.category_id and obj.bannar_id.file:
+            return obj.category_id.name
+        return None
+
 class CategoryAllSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()  # 获取子分类
     parent = serializers.SerializerMethodField()  # 获取祖先分类

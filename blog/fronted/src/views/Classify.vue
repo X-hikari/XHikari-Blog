@@ -73,7 +73,7 @@ const updateActiveRoot = (rootId) => {
 // 更新当前跳转目录
 const updateJumpRoot = (rootId) => {
   jumpRoot.value = rootId;
-  console.log(jumpRoot.value);
+  // console.log(jumpRoot.value);
   // console.log("parentId", parentId.value);
 };
 
@@ -89,6 +89,7 @@ const updateJumpRoot = (rootId) => {
 
 .main-content {
   display: flex;
+  align-items: stretch;
   width: 80%; /* 剩余部分 */
   gap: 5%;
   align-items: flex-start; /* 确保左、右部分高度独立 */
@@ -97,7 +98,7 @@ const updateJumpRoot = (rootId) => {
 .left-part {
   width: 30%; /* 左边部分占据3的比例 */
   position: relative; /* 确保 sticky 能工作 */
-  height: 100vh; /* 确保左边部分高度足够 */
+  height: 100%;
 }
 
 .sticky-header {
@@ -107,8 +108,9 @@ const updateJumpRoot = (rootId) => {
   padding: 10px;
 }
 
-
 .right-part {
   width: 65%; /* 右边部分占据7的比例 */
+  height: 100%;
+  margin-bottom: 1000px;
 }
 </style>

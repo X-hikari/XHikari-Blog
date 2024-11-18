@@ -286,7 +286,7 @@ button {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 30%;
+  height: 580px;
   font-size: 2rem;
   text-align: center;
   padding: 10px;

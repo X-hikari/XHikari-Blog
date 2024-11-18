@@ -40,7 +40,7 @@
         <span class="article-card__views">{{ views }} 阅读</span>
       </div>
 
-      <button @click="goToArticle" class="read-more-button">阅读更多</button>
+      <button @click="goToArticle(id)" class="read-more-button">阅读更多</button>
     </div>
   </div>
 </template>
@@ -48,9 +48,16 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import { format } from 'date-fns';  // 用于格式化日期
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // 接收父组件传入的 props
 const props = defineProps({
+  id: {
+    type: Number,
+    required: true
+  },
   title: {
     type: String,
     required: true
@@ -93,8 +100,9 @@ const expandSummary = () => {
 };
 
 // 跳转到文章详情
-const goToArticle = () => {
-  alert("跳转到文章详情页面");
+const goToArticle = (id) => {
+  // 使用 Vue Router 的编程式导航
+  router.push({ path: '/article', query: { id } });
 };
 
 // 格式化日期

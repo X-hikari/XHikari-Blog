@@ -25,6 +25,7 @@ import CatalogueItem from '@/components/Catalogues/CatalogueItem.vue';
 
 // 定义组件的 prop
 const props = defineProps({
+  // directories:数组，每个元素只有id、name、children
   directories: {
     type: Array,
     required: true

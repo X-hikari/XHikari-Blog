@@ -95,7 +95,6 @@ class Category(models.Model):
             parent = parent.parent
         return ancestors[::-1]  # 返回从上到下的父分类列表
 
-
 class Article(models.Model):
     title = models.CharField(max_length=200, unique=True)
     content = models.TextField()

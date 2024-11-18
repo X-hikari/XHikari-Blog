@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'; 
 import Classify from '../views/Classify.vue'; 
+import Article from '@/views/Article.vue';
 
 const routes = [
   { path: '/', redirect: '/home' }, // 自动重定向到 /home
   { path: '/home', name: 'Home', component: Home },
   { path: '/classify', name: 'Classify', component: Classify },
+  { path: '/article', name: 'Article', component: Article },
 ]
 
 const router = createRouter({

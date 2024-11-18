@@ -22,6 +22,7 @@
       <ArticleCard
         v-for="(article, index) in paginatedArticles"
         :key="index"
+        :id="article.id"
         :title="article.title"
         :summary="article.summary"
         :date="article.updated_at"

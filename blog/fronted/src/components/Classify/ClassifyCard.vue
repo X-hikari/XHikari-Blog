@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 20px;
   backdrop-filter: blur(1px);
-  margin-bottom: 1000px;
+  /* margin-bottom: 1000px; */
 }
 
 .title {
