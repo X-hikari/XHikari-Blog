@@ -2,7 +2,10 @@
   <ul>
     <li v-for="(category, index) in categories" :key="category.id" ref="categoryItems">
       <div>
-        <span class="classifyname">{{ category.name }}</span>
+        <span class="classifyname" 
+        @click="category.children && category.children.length === 0 ? goToCategory(category.id) : null" 
+        :class="{ 'clickable': category.children && category.children.length === 0 }">
+        {{ category.name }}</span>
         <span class="articlecount" v-if="category.children && category.children.length === 0">  — —  ({{ category.article_count }})</span>
       </div>
 
@@ -21,6 +24,7 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue';
 import ClassifyItem from '@/components/Classify/ClassyItem.vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   categories: {
@@ -38,6 +42,12 @@ const emit = defineEmits(['update-active-root']);
 const categoryItems = ref([]);
 const childComponents = ref({});
 const buffer = 50; // 触发位置距离顶部的缓冲距离
+const router = useRouter();
+
+const goToCategory = (categoryId) => {
+  // 使用 Vue Router 的编程式导航
+  router.push({ path: '/category', query: { categoryId } });
+}
 
 const scrollToCategory = (categoryId) => {
   nextTick(() => {
@@ -119,8 +129,19 @@ ul {
 }
   
 .classifyname {
-    /* background-color: rgba(255, 255, 255, 0.8); */
-    border-radius: 5px;
+  /* background-color: rgba(255, 255, 255, 0.8); */
+  border-radius: 5px;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease; /* 平滑过渡 */
+}
+
+.clickable:hover {
+  font-size: 1.1em; /* 略微增大字体 */
+  color: #007bff; /* 修改字体颜色 */
+  border-bottom: 2px solid #007bff; /* 添加下边框 */
 }
 
 li {

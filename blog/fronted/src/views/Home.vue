@@ -191,31 +191,6 @@ const changePage = (newPage) => {
   gap: 20px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.pagination button {
-  padding: 10px 20px;
-  background-color: #5e3c3c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 0 10px;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.PageText {
-  font-size: 20px;
-}
-
 @keyframes imageAnimation {
   0% {
     opacity: 0;

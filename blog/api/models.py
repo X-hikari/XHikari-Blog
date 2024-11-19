@@ -114,7 +114,9 @@ class Article(models.Model):
         indexes = [
             models.Index(fields=['status']),
             models.Index(fields=['title']),
+            models.Index(fields=['category_id']),
         ]
+        ordering = ['-updated_at']
 
     def __str__(self):
         return self.title

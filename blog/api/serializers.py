@@ -59,3 +59,29 @@ class CategoryAllSerializer(serializers.ModelSerializer):
             total_articles += self.get_article_count(child)
 
         return total_articles
+    
+class CategorySerializer(serializers.ModelSerializer):
+    banner_url = serializers.SerializerMethodField()
+    article_count = serializers.SerializerMethodField()  # 获取文章数量
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = Category
+        fields = '__all__'  # 保留所有字段
+        extra_fields = ['category', 'banner_url']
+
+    def get_banner_url(self, obj):
+        if obj.bannar_id and obj.bannar_id.file:
+            return obj.bannar_id.file.url  # 确保返回的是图片文件的 URL
+        return None
+   
+    def get_article_count(self, obj):
+        # 计算当前分类的文章数量
+        total_articles = obj.articles.count()
+
+        # 递归地计算所有子分类的文章数量
+        for child in obj.subcategories.all():
+            total_articles += self.get_article_count(child)
+
+        return total_articles
