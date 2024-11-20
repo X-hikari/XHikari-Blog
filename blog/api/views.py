@@ -1,8 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+from django.utils import timezone
 from .models import *
 from .serializers import *
+import os
 
 class ArticleList(APIView):
     def get(self, request):
@@ -45,3 +47,65 @@ class CategoryDetailView(APIView):
             return Response(serializer.data)
         except Category.DoesNotExist:
             raise NotFound("Category not found")
+
+UPLOAD_DIR = ".\\fronted\\public\\uploads"
+
+class UploadImage(APIView):
+    def post(self,request):
+        if request.method == 'POST' and request.FILES.get('file'):
+            file = request.FILES['file']
+            file_name = file.name  # 使用上传的文件名，不进行修改
+
+            file_path = os.path.join(UPLOAD_DIR, file_name)
+
+            # 创建目录，如果没有的话
+            os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+            # 保存文件
+            with open(file_path, 'wb') as f:
+                f.write(file.read())
+
+            # 返回成功响应，返回文件的存储路径
+            return Response({'status': 'success', 'path': f'/uploads/{file_name}'})
+
+        # 如果没有文件上传，则返回错误响应
+        return Response({'status': 'error', 'message': 'No file uploaded'}, status=400)
+
+class AddArticle(APIView):
+    def post(self, request):
+        # 从请求中获取 title 和 content 参数
+        title = request.data.get('title')
+        content = request.data.get('content')
+        status = request.data.get('status')
+
+        print(title)
+        print(content)
+        print(status)
+
+        # 检查是否有 title 和 content 参数
+        if not title or not content or not status:
+            return Response(
+                {"error": "Title and content are required."}, 
+            )
+
+        # 获取当前时间
+        current_time = timezone.now()
+
+        # 创建 Article 实例，使用默认值填充其他字段
+        article = Article(
+            title=title,
+            content=content,
+            created_at=current_time,
+            updated_at=current_time,
+            user_id=User.objects.get(UID=10000000),  # 默认用户ID
+            status='published'  # 默认状态
+        )
+
+        # 保存文章
+        article.save()
+
+        # 使用序列化器返回文章的详细信息
+        serializer = ArticleSerializer(article)
+
+        # 返回创建的文章信息
+        return Response(serializer.data)

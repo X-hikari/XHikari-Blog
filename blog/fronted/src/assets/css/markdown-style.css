@@ -75,6 +75,8 @@
 
 .markdown-body pre {
   overflow: hidden !important;
+  overflow-x: auto !important;
+  white-space: pre;
   margin-bottom: 20px;
   code{ 
       display: inline-block;

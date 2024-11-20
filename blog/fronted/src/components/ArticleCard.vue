@@ -127,6 +127,7 @@ onMounted(() => {
 <style scoped>
 .article-card {
   width: 100%;
+  min-width: 720px;
   max-width: 980px;
   background-color: #fff;
   border-radius: 10px;

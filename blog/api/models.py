@@ -100,7 +100,7 @@ class Article(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    summary = models.TextField()
+    summary = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[('draft', 'Draft'), ('published', 'Published')], default='draft')
     visits = models.IntegerField(default=0)
     comment_num = models.IntegerField(default=0)
