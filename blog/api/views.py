@@ -5,6 +5,7 @@ from django.utils import timezone
 from .models import *
 from .serializers import *
 import os
+import pytz
 
 class ArticleList(APIView):
     def get(self, request):
@@ -90,6 +91,7 @@ class AddArticle(APIView):
 
         # 获取当前时间
         current_time = timezone.now()
+        current_time = current_time.astimezone(pytz.timezone('Asia/Shanghai'))
 
         # 创建 Article 实例，使用默认值填充其他字段
         article = Article(

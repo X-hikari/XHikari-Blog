@@ -54,7 +54,7 @@ const fullText = '与你在此的相遇\n就是命运石之门的选择';
 const displayedText = ref('');
 const articles = ref([]);  // 声明 articles
 const page = ref(1);  // 当前页数
-const pageSize = 4;  // 每页显示 8 个文章
+const pageSize = 8;  // 每页显示 8 个文章
 
 // 控制文字显示的定时器
 let interval = null;
