@@ -3,14 +3,16 @@
     <!-- Markdown 编辑器 -->
     <md-editor ref="editorRef" v-model="editorValue" height="400px" class="editor" @paste="handlePaste" />
     <div class="operation">
-      <el-button type="primary" @click="triggerArticleUpload('draft')">保存</el-button>
-      <el-button type="primary" @click="triggerArticleUpload('published')">发布</el-button>
+      <el-button type="primary" @click="triggerArticleUpload('draft')" v-if="mode === 'create'">保存</el-button>
+      <el-button type="primary" @click="triggerArticleUpload('published')" v-if="mode === 'create'">发布</el-button>
+      <el-button type="primary" @click="triggerArticleUpdate()" v-if="mode === 'edit'">保存</el-button>
+      <el-button type="default" @click="resetArticle" v-if="mode === 'edit'">重置</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css'; // 引入样式
@@ -21,6 +23,48 @@ import 'element-plus/dist/index.css';  // 引入 Element Plus 样式
 // Markdown 内容
 const editorValue = ref('# 这是一个 Markdown 编辑器');
 const editorRef = ref(null);  // 用来获取 MdEditor 实例
+
+// 当前模式，'create'表示发布文章，'edit'表示修改文章
+const props = defineProps({
+  mode: {
+    type: String,
+    required: true
+  }, 
+  articleData: {
+    type: Object,
+    default: () => ({})  // 默认值为空对象
+  }
+});
+
+const fetchArticleContent = async (id) => {
+  try {
+    const response = await axios.get(`http://localhost:8001/api/admin/articleContent/`, {
+      params: { id }
+    });
+    if (response.status === 200) {
+      // 如果获取成功，将内容加载到编辑器中
+      editorValue.value = response.data.content || '';
+    }
+  } catch (error) {
+    console.error('获取文章内容失败', error);
+    editorValue.value = '';  // 如果获取失败，清空编辑器内容
+  }
+};
+
+// 监听 mode 和 articleData 的变化
+watch(() => props.mode, (newMode) => {
+  if (newMode === 'edit' && props.articleData.id) {
+    // 调用 API 获取文章内容
+    fetchArticleContent(props.articleData.id);
+  }
+  if (newMode === 'create') {
+    editorValue.value = "# 这是一个 Markdown 编辑器";
+  }
+}, { immediate: true });   // immediate: true 使得在组件加载时就立即执行
+
+const resetArticle = () => {
+  fetchArticleContent(props.articleData.id);  // 清空或加载原始内容
+};
 
 const triggerArticleUpload = (status) => {
   // 获取编辑器中的 Markdown 内容
@@ -48,9 +92,55 @@ const triggerArticleUpload = (status) => {
   uploadArticle(articleData);
 }
 
-const uploadArticle = async (articleData) => {
+const triggerArticleUpdate = () => {
+  // 获取编辑器中的 Markdown 内容
+  const content = editorValue.value;
+
+  // 使用正则表达式提取第一个 # 开头的行作为标题
+  const titleMatch = content.match(/^# (.+)$/m);  // 以 # 开头的行
+
+  let title = 'Untitled';
+
+  if (titleMatch && titleMatch[1]) {
+    title = titleMatch[1].trim();  // 提取标题并去除多余的空格
+  }
+
+  const articleData = {
+    id:props.articleData.id,
+    title,
+    content,
+  };
+
+  updateArticle(articleData, 'http://localhost:8001/api/admin/updateArticleContent/');
+}
+
+const updateArticle = async (articleData, web) => {
   try {
-    const response = await axios.post('http://localhost:8001/api/addArticle/', articleData, {
+    const response = await axios.post(web, articleData, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',  // 告诉服务器返回 JSON 格式
+      },
+    });
+    if (response.status === 200) {
+      alert("修改成功");
+      return true;
+    } else {
+      alert("修改失败");
+      console.error('修改失败', response.data);
+      return false;
+    }
+  } catch (error) {
+    alert("修改出错");
+    console.error('修改出错', error);
+    return false;
+  }
+}
+
+const uploadArticle = async (articleData) => {
+  // console.log(articleData);
+  try {
+    const response = await axios.post('http://localhost:8001/api/admin/addArticle/', articleData, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',  // 告诉服务器返回 JSON 格式
@@ -148,7 +238,7 @@ const uploadImageToServer = async (file, fileName) => {
   formData.append('file', file, fileName);
 
   try {
-    const response = await axios.post('http://localhost:8001/api/upload/', formData, {
+    const response = await axios.post('http://localhost:8001/api/admin/upload/', formData, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',  // 告诉服务器返回 JSON 格式

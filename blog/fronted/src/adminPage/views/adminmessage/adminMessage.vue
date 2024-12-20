@@ -4,13 +4,13 @@
     <div class="button-container">
       <button 
         :class="{ active: currentView === Webmaster }" 
-        @click="currentView = Webmaster"
+        @click="currentView = WebmasterComponent"
       >
         博主信息
       </button>
       <button 
         :class="{ active: currentView === WebInformation }" 
-        @click="currentView = WebInformation"
+        @click="currentView = WebInformationComponent"
       >
         网站信息
       </button>
@@ -22,9 +22,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import Webmaster from './Webmaster.vue';
 import WebInformation from './WebInformation.vue';
+
+const WebmasterComponent = markRaw(Webmaster)
+const WebInformationComponent = markRaw(WebInformation)
 
 const currentView = ref(Webmaster);
 </script>

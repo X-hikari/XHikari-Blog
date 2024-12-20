@@ -18,7 +18,7 @@
         <input id="adminSign" type="text" v-model="adminSign" />
       </div>
       <div class="info-item">
-        <label for="adminEmail">背景图片：</label>
+        <label for="adminBackground">背景图片：</label>
         <div class="background-section">
           <button class="change-background-btn" @click="fileInput.click()">修改背景</button>
           <input ref="fileInput" type="file" accept="image/*" @change="handleBackgroundChange" style="display: none;" />
@@ -164,14 +164,14 @@ function resetChanges() {
 }
 
 .info-section {
-  width: 100%; /* 信息区域宽度 */
+  width: 100%;
 }
 
 .info-item {
   display: flex;
-  flex-direction: row;  /* 更改为水平方向排列标签和输入框 */
+  flex-direction: row;
   margin-bottom: 15px;
-  align-items: center;  /* 确保标签和输入框垂直居中 */
+  align-items: center;
 }
 
 .info-item label {
