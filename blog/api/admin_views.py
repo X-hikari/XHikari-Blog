@@ -10,7 +10,7 @@ from .admin_serializers import *
 import os
 import pytz
 
-class ArticlePagination(PageNumberPagination):
+class Pagination(PageNumberPagination):
     page_size = 6  # 每页显示7条数据
     page_size_query_param = 'page_size'  # 可以通过查询参数调整每页的数量
     max_page_size = 100  # 最大页数限制
@@ -39,7 +39,7 @@ class ArticleList(APIView):
         articles = Article.objects.filter(query).order_by('id')
 
         # 分页
-        paginator = ArticlePagination()
+        paginator = Pagination()
         result_page = paginator.paginate_queryset(articles, request)
         
         # 序列化数据并返回分页响应，包含 count 等分页信息
@@ -245,3 +245,147 @@ class AddMedia(APIView):
                 uploaded_at = current_time
             )
             return Response({"id": media_instance.id, "message": "File uploaded successfully."}, status=status.HTTP_201_CREATED)
+
+class CategoryList(APIView):
+    def get(self, request):
+        parentName = request.GET.get('parent')
+
+        query = Q()
+        if parentName:
+            try:
+                # 获取指定的父分类
+                category = Category.objects.get(name=parentName)
+                
+                # 获取所有后代分类 ID
+                def get_descendants(category):
+                    descendants = []
+                    children = category.subcategories.all()
+                    for child in children:
+                        descendants.append(child.id)
+                        descendants.extend(get_descendants(child))
+                    return descendants
+                
+                # 获取当前分类及其所有后代分类
+                descendant_ids = get_descendants(category)
+                descendant_ids.append(category.id)  # 包含自身 ID
+                query &= Q(id__in=descendant_ids)
+            except Category.DoesNotExist:
+                return Response({"error": "分类不存在"}, status=404)
+        
+        categories = Category.objects.filter(query).order_by('id')
+
+        # 分页逻辑
+        paginator = Pagination()
+        result_page = paginator.paginate_queryset(categories, request)
+
+        # 序列化数据并返回分页响应，包含 count 等分页信息
+        serializer = CategoryAllSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+class CategoryName(APIView):
+    def get(self, request):
+        category_names = Category.objects.all().order_by('id').values_list('name', flat=True)
+        return Response(list(category_names), status=status.HTTP_200_OK)
+
+class AddCategory(APIView):
+    def post(self, request):
+        category_id = request.data.get('id')
+        name = request.data.get('name')
+        bannar_id = request.data.get('bannar_id')
+        description = request.data.get('description')
+        parentName = request.data.get('parent')
+
+        print(category_id)
+    
+        if not name:
+            return Response(
+                {"error": "Name are required."}, 
+            )
+
+        # 获取父分类的 ID
+        parent_category = None
+        if parentName:
+            try:
+                parent_category = Category.objects.get(name=parentName)
+            except Category.DoesNotExist:
+                return Response(
+                    {"error": f"Parent category '{parentName}' does not exist."},
+                    status=400
+                )
+        
+        media_instance = None
+        if bannar_id and bannar_id != "null":
+            media_instance = Media.objects.get(id=bannar_id)
+
+        # 获取当前时间
+        current_time = timezone.now()
+        current_time = current_time.astimezone(pytz.timezone('Asia/Shanghai'))
+
+        category = Category(
+            name = name,
+            description = description,
+            created_at=current_time,
+            updated_at=current_time,
+            bannar_id = media_instance,
+            parent = parent_category
+        )
+
+        category.save()
+
+        return Response({"message": "Category created successfully"}, status=201)
+
+class UpdateCategory(APIView):
+    def post(self, request):
+        category_id = request.data.get('id')
+        name = request.data.get('name')
+        bannar_id = request.data.get('bannar_id')
+        description = request.data.get('description')
+        parentName = request.data.get('parent')
+
+        if not name:
+            return Response(
+                {"error": "Name are required."}, 
+            )
+        
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        category.name = name
+        category.description = description
+
+        # 获取父分类的 ID
+        parent_category = None
+        if parentName:
+            try:
+                parent_category = Category.objects.get(name=parentName)
+            except Category.DoesNotExist:
+                return Response(
+                    {"error": f"Parent category '{parentName}' does not exist."},
+                    status=400
+                )
+        category.parent = parent_category
+        
+        media_instance = None
+        if bannar_id and bannar_id != "null":
+            media_instance = Media.objects.get(id=bannar_id)
+        category.bannar_id = media_instance
+
+        # 获取当前时间
+        current_time = timezone.now()
+        current_time = current_time.astimezone(pytz.timezone('Asia/Shanghai'))
+        category.updated_at = current_time
+
+        category.save()
+        
+        return Response({"message": "Category updated successfully"}, status=200)
+
+class DeleteCategories(APIView):
+    def post(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No category IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        Category.objects.filter(id__in=ids).delete()
+        return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)

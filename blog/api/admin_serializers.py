@@ -64,3 +64,33 @@ class ArticleSerializer(serializers.ModelSerializer):
         if obj.category_id:
             return obj.category_id.name
         return None
+    
+class CategoryAllSerializer(serializers.ModelSerializer):
+    imageSrc = serializers.SerializerMethodField()
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    parent = serializers.SerializerMethodField()
+    article_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'imageSrc', 'name', 'description', 'article_count', 'parent', 'updated_at']
+    
+    def get_imageSrc(self, obj):
+        if obj.bannar_id:
+            return obj.bannar_id.file.url  # 返回图片的URL
+        return None
+    
+    def get_parent(self, obj):
+        if obj.parent:
+            return obj.parent.name
+        return None
+    
+    def get_article_count(self, obj):
+        article_count = obj.articles.count()
+        
+        children = obj.get_children()
+        
+        for child in children:
+            article_count += self.get_article_count(child)
+        
+        return article_count

@@ -28,7 +28,7 @@
   <!-- 基础操作 -->
   <div class="baseOption">
     <button class="addArticle-btn" @click="switchToArticlePost">添加文章</button>
-    <button class="deleteArticle-btn" @click="deleteSelectedArticles">删除文章</button>
+    <button class="deleteArticle-btn" @click="() => deleteSelectedArticles()">删除文章</button>
   </div>
 
   <!-- 文章列表 -->
@@ -557,7 +557,8 @@ const uploadImageToServer = async (file, fileName, address) => {
   font-size: 1.2em;
 }
 
-.section input select button {
+.section input,
+.section select {
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -698,7 +699,7 @@ th {
 
 .action-column {
   width: 120px;
-  /* text-align: center; */
+  text-align: center;
 }
 
 .cover-wrapper {

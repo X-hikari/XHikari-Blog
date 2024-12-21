@@ -11,5 +11,10 @@ urlpatterns = [
     path('deleteArticles/', admin_views.DeleteArticles.as_view(), name='delete-article'),
     path('updateArticleContent/', admin_views.UpdateArticleContent.as_view(), name='update-article-content'),
     path('updateArticleBase/', admin_views.UpdateArticleBase.as_view(), name = 'update-article-base'),
-    path('addMedia/', admin_views.AddMedia.as_view(), name='add-media')
+    path('addMedia/', admin_views.AddMedia.as_view(), name='add-media'),
+    path('serachCategory/', admin_views.CategoryList.as_view(), name='serach-category'),
+    path('categoryName/', admin_views.CategoryName.as_view(), name='category-name'),
+    path('addCategory/', admin_views.AddCategory.as_view(), name='add-category'),
+    path('deleteCategories/', admin_views.DeleteCategories.as_view(), name='delete-category'),
+    path('updateCategory/', admin_views.UpdateCategory.as_view(), name='update-category')
 ]
