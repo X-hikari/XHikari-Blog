@@ -1,0 +1,162 @@
+from django.db import models
+from django.db.models import Max
+
+# Create your models here.
+class Media(models.Model):
+    file = models.FileField(upload_to='uploads/')  # 存储文件的路径
+    file_type = models.CharField(max_length=50)  # 文件类型（如图片、视频等）
+    file_size = models.PositiveIntegerField()  # 文件大小
+    uploaded_at = models.DateTimeField(auto_now_add=True)  # 上传时间
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['file_type']),
+        ]
+
+    def __str__(self):
+        return self.file.name
+
+class Album(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(null=True, blank=True)  # 分类描述
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class AlbumPhoto(models.Model):
+    file = models.FileField(upload_to='uploads/')  # 存储文件的路径
+    file_type = models.CharField(max_length=50)  # 文件类型（如图片、视频等）
+    file_size = models.PositiveIntegerField()  # 文件大小
+    uploaded_at = models.DateTimeField(auto_now_add=True)  # 上传时间
+
+    album_name = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.file.name
+
+class User(models.Model):
+    UID = models.IntegerField(primary_key=True, unique=True)
+    username = models.CharField(max_length=50, unique=True)
+    password_hash = models.CharField(max_length=255)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    email = models.CharField(max_length=30, null=True, blank=True)
+    signature = models.CharField(max_length=100, null=True, blank=True)
+    
+    # 外键
+    avater = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # 只在没有设置 user_id 的情况下，才自动赋值
+        if not self.user_id:
+            # 获取当前最大的 user_id，并加 1
+            max_user_id = User.objects.aggregate(Max('UID'))['UID__max']
+            if max_user_id:
+                new_user_id = max_user_id + 1
+            else:
+                new_user_id = 10000000  # 如果没有记录，初始化为 10000000（8 位）
+            # 确保 user_id 是 8 位
+            self.user_id = new_user_id
+        super().save(*args, **kwargs)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['username']),
+        ]
+
+    def __str__(self):
+        return self.username
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)  # 分类名称
+    description = models.TextField(null=True, blank=True)  # 分类描述
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    bannar_id = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # 外键关联父类分类（如果有），树状结构
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subcategories')
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+    def get_children_recursive(self):
+        """递归获取当前分类的所有子分类及其子分类"""
+        children = self.subcategories.all()
+        result = []
+        for child in children:
+            # 对每个子类进行递归
+            child_data = {
+                'id': child.id,
+                'name': child.name,
+                'children': child.get_children_recursive(),
+                'parent': child.get_ancestors(),
+                'article_count': child.articles.count()  # 统计该分类下的文章数量
+            }
+            result.append(child_data)
+        return result
+
+    def get_children(self):
+        """获取当前分类的所有子分类"""
+        return self.subcategories.all()
+
+    def get_ancestors(self):
+        """递归获取当前分类的所有父分类（祖先）"""
+        ancestors = []
+        parent = self.parent
+        while parent:
+            ancestors.append(parent.id)
+            parent = parent.parent
+        return ancestors[::-1]  # 返回从上到下的父分类列表
+
+class Article(models.Model):
+    title = models.CharField(max_length=200, unique=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    summary = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[('draft', 'Draft'), ('published', 'Published')], default='draft')
+    visits = models.IntegerField(default=0)
+    comment_num = models.IntegerField(default=0)
+
+    # 外键
+    user_id = models.ForeignKey(User, to_field='UID',  on_delete=models.CASCADE, related_name='articles')
+    category_id = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
+    bannar_id = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['title']),
+            models.Index(fields=['category_id']),
+        ]
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return self.title
+    
+class Comment(models.Model):
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # 外键
+    user_id = models.ForeignKey(User, to_field='UID',  on_delete=models.CASCADE, related_name='comment')
+    article_id = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comment')
+    
+    # 外键关联父评论（如果有）
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
+    class Meta:
+        ordering = ['created_at']  # 默认按创建时间排序（可以按需修改）
+        indexes = [
+            models.Index(fields=['user_id', 'article_id']),
+        ]
+
+    def __str__(self):
+        return f"Comment by {self.user_id.username} on {self.article_id.title}"
