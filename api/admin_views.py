@@ -397,19 +397,14 @@ class UploadPhoto(APIView):
         file = request.FILES.get('file')  # 获取上传的文件
         file_type = request.data.get('fileType')  # 获取文件类型
         file_size = request.data.get('fileSize')  # 获取文件大小
-        album_name = request.data.get('albumName')  # 获取相册名
         
         if not file:
             return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 直接使用 Django FileField 处理上传文件
-        album = Album.objects.get(name=album_name) if album_name else None
 
         media_instance = AlbumPhoto.objects.create(
             file=file,  # 直接赋值给 FileField，Django 会自动存储到 `media/uploads/`
             file_type=file_type,
             file_size=file_size,
-            album_name=album
         )
 
         return Response({
@@ -424,7 +419,8 @@ class AlbumPhotoList(APIView):
         album_name = request.GET.get('album')
 
         if album_name:
-            photos = AlbumPhoto.objects.filter(album_name__name=album_name)  # 按相册筛选
+            album = Album.objects.filter(name=album_name).first()
+            photos = AlbumPhoto.objects.filter(album_id=album)  # 按相册筛选
         else:
             photos = AlbumPhoto.objects.all()  # 获取所有图片
         
@@ -435,7 +431,141 @@ class AlbumPhotoList(APIView):
         # 序列化分页后的数据
         serializer = AlbumPhotoSerializer(paginated_photos, many=True)
 
-        print(settings.BASE_DIR)
-
         # 返回分页后的响应
         return paginator.get_paginated_response(serializer.data)
+
+class UpdateAlbumPhoto(APIView):
+    def post(self, request):
+        photo_id = request.data.get('id')
+        photo_name = request.data.get('name')
+        album_name = request.data.get('album')
+
+        if not photo_name:
+            return Response(
+                {"error": "Name are required."}, 
+            )
+        
+        try:
+            photo = AlbumPhoto.objects.get(id=photo_id)
+        except photo.DoesNotExist:
+            return Response({"error": "photo not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # 获取原始文件路径，并替换文件名部分
+        if photo.file:  # 如果photo.file有值
+            old_file_path = photo.file.path
+
+            # 获取文件名和扩展名
+            file_name = os.path.basename(old_file_path)  # 获取文件名（包括扩展名）
+            file_dir = os.path.dirname(old_file_path)    # 获取文件所在的目录
+            file_name_without_extension, file_extension = os.path.splitext(file_name)  # 分离文件名和扩展名
+
+            # 创建新的文件名
+            new_file_name = f"{photo_name}{file_extension}"
+            # print(f"New file name: {new_file_name}")
+
+            # 拼接新的完整路径
+            new_file_path = os.path.join(file_dir, new_file_name)
+            # print(f"New file path: {new_file_path}")
+
+            try:
+                # 重命名文件
+                os.rename(old_file_path, new_file_path)
+                # print(f"File renamed to {new_file_path}")
+            except Exception as e:
+                # 捕获异常并返回详细错误信息
+                print(f"Error renaming file: {str(e)}")
+                return Response(
+                    {"error": f"Failed to rename file: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            # 更新photo.file
+            photo.file.name = f"uploads/{new_file_name}"
+
+        if album_name:
+            album = Album.objects.filter(name=album_name).first()
+            if album:
+                photo.album_id = album
+        else:
+            photo.album_id = None
+        photo.save()
+
+        return Response({"message": "photo updated successfully"}, status=200)
+
+class DeleteAlbumPhotos(APIView):
+    def post(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No category IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        AlbumPhoto.objects.filter(id__in=ids).delete()
+        return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)
+
+class AlbumList(APIView):
+    def get(self, request):
+        albums = Album.objects.all().order_by('id')
+
+        # 仅在请求中有分页参数时才进行分页
+        if 'page' in request.query_params:
+            paginator = Pagination()
+            paginated_albums = paginator.paginate_queryset(albums, request)
+            serializer = AlbumSerializer(paginated_albums, many=True)
+            return paginator.get_paginated_response(serializer.data)
+        
+        # 否则返回完整数据
+        serializer = AlbumSerializer(albums, many=True)
+        return Response(serializer.data)
+
+    
+class AddAlbum(APIView):
+    def post(self, request):
+        name = request.data.get('name')
+        description = request.data.get('description')
+        current_time = timezone.now()
+        current_time = current_time.astimezone(pytz.timezone('Asia/Shanghai'))
+
+        try:
+            existing_album = Album.objects.get(name=name)
+            return Response({"id": existing_album.id, "message": "Album already exists."}, status=status.HTTP_200_OK)
+        except Album.DoesNotExist:
+            # 如果文件不存在，则保存新文件
+            album_instance = Album.objects.create(
+                name=name,
+                description=description,
+                created_at=current_time,
+                updated_at = current_time
+            )
+            return Response({"id": album_instance.id, "message": "Album added successfully."}, status=status.HTTP_201_CREATED)
+
+class UpdateAlbum(APIView):
+    def post(self, request):
+        album_id = request.data.get('id')
+        name = request.data.get('name')
+        description = request.data.get('description')
+        current_time = timezone.now()
+
+        if not name:
+            return Response(
+                {"error": "Name are required."}, 
+            )
+        
+        try:
+            album = Album.objects.get(id=album_id)
+        except album.DoesNotExist:
+            return Response({"error": "Album not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        album.name = name
+        album.description = description
+        album.updated_at = current_time
+        album.save()
+
+        return Response({"message": "photo updated successfully"}, status=200)
+    
+class DeleteAlbum(APIView):
+    def post(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No category IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        Album.objects.filter(id__in=ids).delete()
+        return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)

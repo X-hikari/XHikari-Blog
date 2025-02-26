@@ -31,7 +31,7 @@ class AlbumPhoto(models.Model):
     file_size = models.PositiveIntegerField()  # 文件大小
     uploaded_at = models.DateTimeField(auto_now_add=True)  # 上传时间
 
-    album_name = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, blank=True)
+    album_id = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.file.name

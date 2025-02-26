@@ -10,7 +10,11 @@
         <button @click="addTab('发布文章', articlePostComponent, 'create')" class="secondbtn">发布文章</button>
       </div>
       <button @click="addTab('分类管理', categoryListComponent)" class="firstbtn">分类管理</button>
-      <button @click="addTab('相册管理', albumList)" class="firstbtn">相册管理</button>
+      <button @click="showAlbumButtons = !showAlbumButtons" class="firstbtn">相册管理</button>
+      <div v-if="showAlbumButtons" class="secondbtn-section">
+        <button @click="addTab('相片管理', albumPhotoList)" class="secondbtn">相片管理</button>
+        <button @click="addTab('相册管理', albumList)" class="secondbtn">相册管理</button>
+      </div>
     </div>
 
     <!-- 动态组件和顶部标签页 -->
@@ -48,7 +52,8 @@ import adminMessage from './adminPage/views/adminmessage/adminMessage.vue';
 import articlePost from './adminPage/views/adminarticle/articlePost.vue';
 import articleList from './adminPage/views/adminarticle/articleList.vue';
 import categoryList from './adminPage/views/admincategory/categoryList.vue';
-import albumList from './adminPage/views/adminalbum/albumPhotosList.vue';
+import albumPhotoList from './adminPage/views/adminalbum/albumPhotosList.vue';
+import albumList from './adminPage/views/adminalbum/albumList.vue';
 
 const adminMessageComponent = markRaw(adminMessage);
 const articlePostComponent = markRaw(articlePost);

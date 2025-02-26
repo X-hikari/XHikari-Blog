@@ -276,7 +276,7 @@ const fetchCategories = async () => {
     }
 
     // 发起请求，带上查询参数
-    const response = await axios.get("http://localhost:8001/api/admin/serachCategory/", {
+    const response = await axios.get("http://localhost:8001/api/admin/searchCategory/", {
       params, // Axios 会自动将对象转换为查询字符串
     });
 
@@ -409,7 +409,7 @@ async function updateNewCategory(bannar_id) {
       console.error('文件上传失败:', response.data);
     }
   } catch (error) {
-    console.error('添加分类出错:', error);
+    console.error('出错:', error);
   }
 }
 
@@ -506,7 +506,7 @@ const uploadImageToServer = async (file, fileName, address) => {
 // 删除选中分类
 const deleteSelectedCategories = async (selectedCategories = null) => {
   // 获取选中分类的 id 数组
-  console.log("selectedCategories ", selectedCategories);
+  // console.log("selectedCategories ", selectedCategories);
   if (!selectedCategories) {
     selectedCategories = categories.value.filter(category => category.selected).map(category => category.id);
   }

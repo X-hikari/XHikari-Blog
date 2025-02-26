@@ -107,17 +107,26 @@ class AlbumPhotoSerializer(serializers.ModelSerializer):
         fields = ['id', 'file_url', 'file_name', 'file_type', 'file_size', 'album_name', 'uploaded_at']
 
     def get_file_url(self, obj):
-        """返回文件的完整 URL"""
         if obj.file:
             return obj.file.url  # Django 会自动生成 URL
         return None
 
     def get_file_name(self, obj):
-        """返回文件名（去掉后缀）"""
         if obj.file:
             return os.path.splitext(os.path.basename(obj.file.name))[0]  # 先去掉路径，再去掉后缀
         return None
 
     def get_album_name(self, obj):
-        """返回所属相册名称（若没有则为空）"""
-        return obj.album_name.name if obj.album_name else ""
+        return obj.album_id.name if obj.album_id else ""
+    
+class AlbumSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Album
+        fields = ['id', 'name', 'description', 'count', 'created_at', 'updated_at']
+
+    def get_count(self, obj):
+        return obj.albumphoto_set.count()

@@ -1,10 +1,10 @@
 <template>
-  <div class="albumlist-header">
+  <div class="albumphotolist-header">
     <div class="section">
       <label for="albums">相册分类：</label>
       <select v-model="album" id="albums">
         <option disabled value="">请选择</option>
-        <option v-for="option in albums" :key="option" :value="option">{{ option }}</option>
+        <option v-for="option in allAlbums" :key="option" :value="option">{{ option }}</option>
       </select>
 
       <div class="section">
@@ -16,7 +16,7 @@
     <div class="baseOption">
       <button class="addphoto-btn" @click="triggerFileInput">添加相片</button>
       <input type="file" ref="fileInput" @change="onFileChangeAndUpload" style="display: none;" />
-      <button class="deletephoto-btn" @click="deleteSelectedPhotos">删除相片</button>
+      <button class="deletephoto-btn" @click="() => deleteSelectedAlbumPhotos()">删除相片</button>
     </div>
   </div>
 
@@ -59,12 +59,67 @@
           <td class="time-column">{{ albumphoto.time }}</td>
           <td class="action-column">
             <button @click="editalbumphoto(albumphoto)" class="edit-option">编辑</button>
-            <button @click="deleteSelectedalbumphotos([albumphoto.id])" class="delete-option">删除</button>
+            <button @click="deleteSelectedAlbumPhotos([albumphoto.id])" class="delete-option">删除</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <!-- 模态窗口 -->
+  <changeModal v-model:visible="showModal" title="图片信息修改">
+    <form @submit.prevent="saveChanges">
+      <!-- ID -->
+      <div class="form-item">
+        <label for="id">ID:</label>
+        <input id="id" type="text" v-model="currentPhoto.id" disabled />
+      </div>
+
+      <!-- 图片 -->
+      <div class="form-item">
+        <label for="cover">图片:</label>
+        <div class="background-section">
+          <img v-bind:src="`http://localhost:8001${currentPhoto.Url}`" class="background-preview" disabled >
+        </div>
+      </div>
+
+      <!-- 文件名 -->
+      <div class="form-item">
+        <label for="name">文件名:</label>
+        <input id="name" type="text" v-model="currentPhoto.name" />
+      </div>
+
+      <!-- 类型 -->
+      <div class="form-item">
+        <label for="type">类型:</label>
+        <input id="type" type="text" v-model="currentPhoto.type" disabled />
+      </div>
+      
+      <!-- 大小 -->
+      <div class="form-item">
+        <label for="size">大小:</label>
+        <input id="size" type="text" v-model="currentPhoto.size" disabled />
+      </div>
+
+      <!-- 所属相册 -->
+      <div class="form-item">
+        <label for="category">所属相册:</label>
+        <select v-model="nowAlbum" id="allAlbums">
+          <option value="">请选择相册</option>
+          <option v-for="option in allAlbums" :key="option" :value="option">{{ option }}</option>
+        </select>
+      </div>
+
+      <!-- 创建时间 -->
+      <div class="form-item">
+        <label for="time">创建时间:</label>
+        <input id="time" type="text" v-model="currentPhoto.time" disabled />
+      </div>
+
+      <!-- 保存按钮 -->
+      <button type="submit" class="submit-edit-base-btn" @click="updateAlbumPhoto">保存修改</button>
+    </form>
+  </changeModal>
 
   <!-- 分页控件 -->
   <div class="pagination">
@@ -76,16 +131,37 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessageBox, ElMessage } from 'element-plus';
 import axios from "axios";
+import changeModal from "@/adminPage/components/changeModal.vue";
 
 const album = ref("");
+const allAlbums = ref([]);
 const albumphotos = ref([]);
+const currentPhoto = ref({});
+const nowAlbum = ref("");
 
 const fileInput = ref(null);
 const selectedFile = ref(null);
 
 const page = ref(1); // 当前页数
 const totalPages = ref(1); // 总页数
+
+const showModal = ref(false);
+// 全选框的状态
+const selectAll = ref(false);
+
+onMounted(() => {
+  fetchAlbumPhotos();
+  fetchAlbumsName();
+});
+
+// 切换全选/全不选
+function toggleSelectAll() {
+  albumphotos.value.forEach(album => {
+    album.selected = selectAll.value;
+  });
+}
 
 // 触发文件选择框
 const triggerFileInput = () => {
@@ -112,8 +188,6 @@ const onFileChangeAndUpload = async (event) => {
       body: formData,
     });
 
-    const result = await response.json();
-
     if (response.ok) {
       alert('上传成功');
     } else {
@@ -123,7 +197,52 @@ const onFileChangeAndUpload = async (event) => {
     console.error('上传失败', error);
     alert('上传失败');
   }
+
+  fetchAlbumPhotos();
 };
+
+const deleteSelectedAlbumPhotos = async (selectedPhotos = null) => {
+  if (!selectedPhotos) {
+    selectedPhotos = albumphotos.value.filter(albumphoto => albumphoto.selected).map(albumphoto => albumphoto.id);
+  }
+  if (selectedPhotos.length === 0) {
+    ElMessage.warning("请先选择要删除的相片！");
+    return;
+  }
+
+  // 使用 ElMessageBox 弹出确认框
+  ElMessageBox.confirm(
+    '确定要删除这些相片吗？\n删除的相片无法找回。',
+    '删除确认',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(async () => {
+      // 确认删除
+      try {
+        const response = await axios.post("http://localhost:8001/api/admin/deleteAlbumPhotos/", {
+          ids: selectedPhotos
+        });
+
+        if (response.status === 200) {
+          ElMessage.success("删除成功！");
+          fetchAlbumPhotos(); // 刷新当前页
+        } else {
+          ElMessage.error("删除失败！");
+        }
+      } catch (error) {
+        console.error("删除相片失败：", error);
+        ElMessage.error("删除失败！");
+      }
+    })
+    .catch(() => {
+      // 取消删除
+      console.log("用户取消删除操作");
+    });
+}
 
 // 搜索选项
 function searchOpition() {
@@ -159,7 +278,7 @@ const fetchAlbumPhotos = async () => {
         name: albumphoto.file_name,
         type: albumphoto.file_type,
         size: albumphoto.file_size,
-        album: albumphoto.album_name || '无相册',
+        album: albumphoto.album_name || '',
         selected: false, // 前端状态
         time: albumphoto.uploaded_at, // 更新时间
       }));
@@ -172,10 +291,70 @@ const fetchAlbumPhotos = async () => {
     console.error("获取相册图片列表失败：", error);
   }
 };
+
+const fetchAlbumsName = async () => {
+  try {
+    const response = await axios.get("http://localhost:8001/api/admin/searchAlbum/");
+    if (response.status === 200) {
+      allAlbums.value = response.data.map(album => album.name);
+    } else {
+      console.error("后端数据格式不正确：", response.data);
+    }
+  } catch (error) {
+    console.error("获取相册名称失败：", error);
+  }
+}
+
+const editalbumphoto = async (albumphoto) => {
+  currentPhoto.value = { ...albumphoto };
+  nowAlbum.value = albumphoto.album;
+  showModal.value = true;
+}
+
+async function updateAlbumPhoto() {
+  // console.log(currentPhoto.value.name);
+  try {
+    const formData = new FormData();
+    formData.append('id', currentPhoto.value.id);
+    if (currentPhoto.value.name) {
+      formData.append('name', currentPhoto.value.name);
+    }
+    formData.append('album', nowAlbum.value);
+
+    const response = await axios.post('http://localhost:8001/api/admin/updateAlbumPhoto/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',  // 告诉服务器这次请求是上传文件
+      },
+    });
+
+    if (response.status === 200) {
+      // 上传成功，获取返回的 id
+      console.log('图片修改成功');
+    } else {
+      console.log(response.status);
+      console.error('图片修改失败:', response.data);
+    }
+  } catch (error) {
+    console.error('修改图片信息出错:', error);
+  }
+
+  // 刷新当前页面
+  fetchAlbumPhotos();
+
+  showModal.value = false;
+}
+
+// 分页跳转
+function goToPage(newPage) {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    page.value = newPage;
+    fetchAlbumPhotos();
+  }
+}
 </script>
 
 <style>
-.albumlist-header {
+.albumphotolist-header {
   padding-right: 20%;
   width: 100%;
   display: flex;
@@ -319,6 +498,17 @@ th {
 .cover-wrapper img {
   width: 100px;
   height: auto;
+}
+
+.submit-edit-base-btn {
+  /* width: 100%; */
+  padding: 5px 12px;
+  font-size: 0.85em;
+  border-radius: 4px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
 }
 
 .pagination {
