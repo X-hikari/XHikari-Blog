@@ -48,3 +48,9 @@ class CategoryDetailView(APIView):
             return Response(serializer.data)
         except Category.DoesNotExist:
             raise NotFound("Category not found")
+        
+class AlbumList(APIView):
+    def get(self, request):
+        albums = Album.objects.all().order_by('id')
+        serializer = AlbumSerializer(albums, many=True)  # 序列化数据
+        return Response(serializer.data)

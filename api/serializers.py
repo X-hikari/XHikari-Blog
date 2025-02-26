@@ -85,3 +85,16 @@ class CategorySerializer(serializers.ModelSerializer):
             total_articles += self.get_article_count(child)
 
         return total_articles
+    
+class AlbumSerializer(serializers.ModelSerializer):
+    imageSrc = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Album
+        fields = ['id', 'name', 'imageSrc'] 
+
+    def get_imageSrc(self, obj):
+        # 获取与该相册关联的最多 3 张最新照片，按 id 降序排列
+        latest_photos = AlbumPhoto.objects.filter(album_id=obj.id).order_by('-id')[:3]
+        # 返回图片 URL 列表
+        return [photo.file.url for photo in latest_photos] if latest_photos else None

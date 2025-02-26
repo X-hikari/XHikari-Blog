@@ -2,25 +2,31 @@
   <div class="album-container" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
     <!-- 左侧开口盒子效果，盖住部分图片 -->
     <div class="box-left">
-      <span class="album-name">相册名字</span>
+      <span class="album-name">{{ name }}</span>
     </div>
+    
     <div 
-      v-for="(img, index) in images" 
+      v-for="(img, index) in imageSrc" 
       :key="index"
       class="photo-stack"
       :style="{
-        zIndex: images.length - index,
+        zIndex: imageSrc.length - index,
         transform: getTransform(index),
         transition: `transform ${0.3 + index * 0.1}s ease-out`
       }"
     >
-      <img 
-        :src="img" 
-        class="photo" 
-        alt="photo"
-        @load="handleImageLoad($event, index)"
-        :style="{ objectFit: objectFitStyles[index] || 'cover' }"
-      >
+      <template v-if="img">
+        <img 
+          :src="`http://localhost:8001${img}`" 
+          class="photo" 
+          alt="photo"
+          @load="handleImageLoad($event, index)"
+          :style="{ objectFit: objectFitStyles[index] || 'cover' }"
+        >
+      </template>
+      <template v-else>
+        <div class="placeholder">该相册暂无图片</div>
+      </template>
     </div>
   </div>
 </template>
@@ -28,29 +34,24 @@
 <script setup>
 import { ref, reactive } from 'vue';
 
-const images = [
-  '/UserCard/background.jpg',
-];
+const props = defineProps({
+  id: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  imageSrc: {
+    type: Array,
+    default: ['']  // 允许空列表作为默认值
+  }
+});
 
 const isHovered = ref(false);
 // 用于存储每张图片对应的 object-fit 样式
 const objectFitStyles = reactive({});
-
-// 与 CSS 中容器尺寸一致
-const containerWidth = 150;
-const containerHeight = 200;
-const containerRatio = containerWidth / containerHeight;
-
-function handleImageLoad(event, index) {
-  const naturalWidth = event.target.naturalWidth;
-  const naturalHeight = event.target.naturalHeight;
-  const imageRatio = naturalWidth / naturalHeight;
-  if (Math.abs(imageRatio - containerRatio) / containerRatio < 0.1) {
-    objectFitStyles[index] = 'contain';
-  } else {
-    objectFitStyles[index] = 'cover';
-  }
-}
 
 const getTransform = (index) => {
   if (index === 0) {
@@ -87,8 +88,20 @@ const getTransform = (index) => {
 .photo {
   width: 100%;
   height: 100%;
-  /* object-fit 根据图片比例在加载后动态设置 */
   transition: transform 0.3s;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 5px;
 }
 
 /* 左侧开口盒子效果：略高于图片，并垂直居中，同时禁止光标与文本选择 */
