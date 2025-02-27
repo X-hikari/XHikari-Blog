@@ -296,7 +296,7 @@ class AddCategory(APIView):
         description = request.data.get('description')
         parentName = request.data.get('parent')
 
-        print(category_id)
+        # print(category_id)
     
         if not name:
             return Response(
@@ -498,7 +498,17 @@ class DeleteAlbumPhotos(APIView):
         if not ids:
             return Response({"detail": "No category IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
         
-        AlbumPhoto.objects.filter(id__in=ids).delete()
+        # 获取要删除的相片记录
+        photos_to_delete = AlbumPhoto.objects.filter(id__in=ids).order_by('id')
+        
+        # 遍历并删除每个相片的文件
+        for photo in photos_to_delete:
+            photo_file_path = os.path.join(settings.MEDIA_ROOT, photo.file.name)
+            if os.path.exists(photo_file_path):
+                os.remove(photo_file_path)
+        
+        # 删除数据库中的记录
+        photos_to_delete.delete()
         return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)
 
 class AlbumList(APIView):

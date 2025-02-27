@@ -54,3 +54,21 @@ class AlbumList(APIView):
         albums = Album.objects.all().order_by('id')
         serializer = AlbumSerializer(albums, many=True)  # 序列化数据
         return Response(serializer.data)
+    
+class AlbumDetailView(APIView):
+    def get(self, request):
+        album_id = request.GET.get('albumId')
+
+        try:
+            album = Album.objects.get(id=album_id)
+        except Album.DoesNotExist:
+            return Response({"error": "Album not found"}, status=404)
+
+        album_photos = AlbumPhoto.objects.filter(album_id=album_id).order_by('-id')
+        
+        photo_serializer = AlbumPhotoSerializer(album_photos, many=True)
+
+        return Response({
+            "albumName": album.name,
+            "photos": photo_serializer.data
+        })

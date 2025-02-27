@@ -16,6 +16,8 @@ declare module 'vue' {
     ClassifyCard: typeof import('./src/components/Classify/ClassifyCard.vue')['default']
     ClassyItem: typeof import('./src/components/Classify/ClassyItem.vue')['default']
     Pagination: typeof import('./src/components/Pagination.vue')['default']
+    PhotoBig: typeof import('./src/components/Album/PhotoBig.vue')['default']
+    PhotoList: typeof import('./src/components/Album/PhotoList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TimeWatch: typeof import('./src/components/TimeWatch.vue')['default']

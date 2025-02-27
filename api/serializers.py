@@ -98,3 +98,12 @@ class AlbumSerializer(serializers.ModelSerializer):
         latest_photos = AlbumPhoto.objects.filter(album_id=obj.id).order_by('-id')[:3]
         # 返回图片 URL 列表
         return [photo.file.url for photo in latest_photos] if latest_photos else None
+    
+class AlbumPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlbumPhoto
+        fields = ['file']
+
+    # 通过 `to_representation` 方法，返回一个包含所有 file 路径的列表
+    def to_representation(self, instance):
+        return instance.file.url

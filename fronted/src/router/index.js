@@ -4,6 +4,7 @@ import Classify from '../views/Classify.vue';
 import Article from '@/views/Article.vue';
 import Category from '@/views/Category.vue';
 import Album from '@/views/Album.vue';
+import Photo from '@/views/Photo.vue';
 
 const routes = [
   { path: '/', redirect: '/home' }, // 自动重定向到 /home
@@ -12,6 +13,7 @@ const routes = [
   { path: '/category', name: 'Category', component: Category },
   { path: '/article', name: 'Article', component: Article },
   { path: '/album', name: 'Album', component: Album },
+  { path: '/photo', name: 'Photo', component: Photo }
 ]
 
 const router = createRouter({

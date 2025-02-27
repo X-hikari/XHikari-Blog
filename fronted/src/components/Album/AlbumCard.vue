@@ -1,5 +1,5 @@
 <template>
-  <div class="album-container" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
+  <div class="album-container" @mouseenter="isHovered = true" @mouseleave="isHovered = false" @click="goToAlbum(id)">
     <!-- 左侧开口盒子效果，盖住部分图片 -->
     <div class="box-left">
       <span class="album-name">{{ name }}</span>
@@ -20,7 +20,6 @@
           :src="`http://localhost:8001${img}`" 
           class="photo" 
           alt="photo"
-          @load="handleImageLoad($event, index)"
           :style="{ objectFit: objectFitStyles[index] || 'cover' }"
         >
       </template>
@@ -33,6 +32,9 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps({
   id: {
@@ -53,6 +55,11 @@ const isHovered = ref(false);
 // 用于存储每张图片对应的 object-fit 样式
 const objectFitStyles = reactive({});
 
+const goToAlbum = (albumId) => {
+  // 使用 Vue Router 的编程式导航
+  router.push({ path: '/photo', query: { albumId } });
+};
+
 const getTransform = (index) => {
   if (index === 0) {
     return isHovered.value 
@@ -72,6 +79,7 @@ const getTransform = (index) => {
   perspective: 1200px;
   /* 允许显示超出容器的部分，保证左侧盒子能显示 */
   overflow: visible;
+  cursor: pointer;
 }
 
 .photo-stack {
@@ -130,7 +138,7 @@ const getTransform = (index) => {
 .album-name {
   writing-mode: vertical-rl;
   text-orientation: upright;
-  font-size: 14px;
+  font-size: bold;
   color: #333;
 }
 </style>

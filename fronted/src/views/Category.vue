@@ -59,11 +59,10 @@ const pageSize = 8;  // 每页显示 8 个文章
 const data = ref(null);
 
 onMounted(() => {
-  console.log(1);
   axios.get(`http://localhost:8001/api/category?id=${categoryId.value}`)
   .then(response => {
     data.value = response.data;
-    console.log(data.value);
+    // console.log(data.value);
   })
   .catch(error => {
     console.error('Error fetching articles:', error);
@@ -72,7 +71,7 @@ onMounted(() => {
   axios.get(`http://localhost:8001/api/articles?id=${categoryId.value}`)
   .then(response => {
     articles.value = response.data;
-    //   console.log(articles.value);
+    // console.log(articles.value);
   })
   .catch(error => {
     console.error('Error fetching articles:', error);

@@ -1,7 +1,7 @@
 <template>
   <div class="album-main-content">
     <!-- 相册页面标题 -->
-    <h1 class="album-title">我的相册</h1>
+    <h1 class="album-title">Xhikariの相册</h1>
     
     <!-- 相册卡片容器 -->
     <div class="album-grid">
@@ -44,7 +44,7 @@ onMounted(() => {
 <style scoped>
 .album-main-content {
   width: 75%;
-  margin: 0 auto;
+  margin: 160px auto;
   text-align: center;
 }
 

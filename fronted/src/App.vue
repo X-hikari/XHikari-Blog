@@ -68,6 +68,8 @@ watch(route, (newRoute) => {
   if (newRoute.path === '/home') {
     document.querySelector('.main-content').classList.add('no-background');
     showTitle.value = false; // 在首页不显示标题
+  } else if (newRoute.path === '/album' || newRoute.path === '/photo') {
+    showTitle.value = false;
   } else {
     document.querySelector('.main-content').classList.remove('no-background');
     showTitle.value = true; // 非首页显示标题
@@ -260,7 +262,7 @@ button {
   /* background-color: rgba(248, 248, 248, 0.8); */
   /* opacity: 0.8; */
   padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .main-content::before {
