@@ -15,6 +15,7 @@
         <button @click="addTab('相片管理', albumPhotoList)" class="secondbtn">相片管理</button>
         <button @click="addTab('相册管理', albumList)" class="secondbtn">相册管理</button>
       </div>
+      <button @click="addTab('媒体管理', mediaList)" class="firstbtn">媒体管理</button>
     </div>
 
     <!-- 动态组件和顶部标签页 -->
@@ -54,6 +55,7 @@ import articleList from './adminPage/views/adminarticle/articleList.vue';
 import categoryList from './adminPage/views/admincategory/categoryList.vue';
 import albumPhotoList from './adminPage/views/adminalbum/albumPhotosList.vue';
 import albumList from './adminPage/views/adminalbum/albumList.vue';
+import mediaList from './adminPage/views/adminmedia/mediaList.vue';
 
 const adminMessageComponent = markRaw(adminMessage);
 const articlePostComponent = markRaw(articlePost);

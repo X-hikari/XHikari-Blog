@@ -2,7 +2,7 @@
   <div class="article-card">
     <!-- 图片部分，如果 imageSrc 不为空才显示 -->
     <div v-if="imageSrc" class="article-card__image">
-      <img :src="imageSrc" alt="Article Image" :class="{ 'expanded': isImageExpanded }" ref="imageElement" @load="onImageLoad" />
+      <img :src="`http://localhost:8001${imageSrc}`" alt="Article Image" :class="{ 'expanded': isImageExpanded }" ref="imageElement" @load="onImageLoad" />
       <!-- 只有图片实际高度大于200px时才显示展开按钮 -->
       <div v-if="imageHeight > 200 && !isImageExpanded" class="image-down-overlay" @click="expandImage">
         <div class="icon-circle">

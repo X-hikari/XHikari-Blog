@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework import status
 from django.db.models import Q
@@ -104,10 +105,6 @@ class AddArticle(APIView):
         title = request.data.get('title')
         content = request.data.get('content')
         status = request.data.get('status')
-
-        # print(title)
-        # print(content)
-        # print(status)
 
         # 检查是否有 title 和 content 参数
         if not title or not content or not status:
@@ -220,6 +217,40 @@ class UpdateArticleBase(APIView):
 
         return Response({"message": "Article updated successfully"}, status=status.HTTP_200_OK)
 
+class MediaList(APIView):
+    def get(self, request):
+        filetype = request.GET.get('type')
+        fileused = request.GET.get('used')
+
+        # 初始查询
+        queryset = Media.objects.all()
+
+        if filetype:
+            queryset = queryset.filter(file_type=filetype)
+
+        # 根据 fileused 过滤是否被引用
+        if fileused == '1':  # 查询被引用的媒体
+            filter_condition = Q()
+
+            # 只考虑 Article 和 Category 这两个模型
+            for model_class in [Article, Category]:
+                for field in model_class._meta.get_fields():
+                    if isinstance(field, models.ForeignKey) and field.related_model == Media:
+                        # 动态生成查询条件，检查该外键字段是否引用了 Media
+                        related_field_name = field.name
+                        filter_condition |= Q(**{f'{related_field_name}__in': queryset.values('id')})
+
+            # 使用合并的过滤条件来查询 Media
+            queryset = queryset.filter(filter_condition)
+
+        # 分页
+        paginator = Pagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        
+        # 序列化数据并返回分页响应，包含 count 等分页信息
+        serializer = MediaSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    
 class AddMedia(APIView):
     def post(self, request):
         # 获取传入的参数
@@ -246,6 +277,76 @@ class AddMedia(APIView):
                 uploaded_at = current_time
             )
             return Response({"id": media_instance.id, "message": "File uploaded successfully."}, status=status.HTTP_201_CREATED)
+
+class UpdateMedia(APIView):
+    def post(self, request):
+        media_id = request.data.get('id')
+        media_name = request.data.get('name')
+
+        if not media_name:
+            return Response(
+                {"error": "Name are required."}, 
+            )
+        
+        try:
+            media = Media.objects.get(id=media_id)
+        except media.DoesNotExist:
+            return Response({"error": "Media not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # 获取原始文件路径，并替换文件名部分
+        if media.file:  # 如果photo.file有值
+            old_file_path = media.file.path
+
+            # 获取文件名和扩展名
+            file_name = os.path.basename(old_file_path)  # 获取文件名（包括扩展名）
+            file_dir = os.path.dirname(old_file_path)    # 获取文件所在的目录
+            file_name_without_extension, file_extension = os.path.splitext(file_name)  # 分离文件名和扩展名
+
+            # 创建新的文件名
+            new_file_name = f"{media_name}{file_extension}"
+            print(f"New file name: {new_file_name}")
+
+            # 拼接新的完整路径
+            new_file_path = os.path.join(file_dir, new_file_name)
+            print(f"New file path: {new_file_path}")
+
+            try:
+                # 重命名文件
+                os.rename(old_file_path, new_file_path)
+                # print(f"File renamed to {new_file_path}")
+            except Exception as e:
+                # 捕获异常并返回详细错误信息
+                print(f"Error renaming file: {str(e)}")
+                return Response(
+                    {"error": f"Failed to rename file: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            # 更新photo.file
+            media.file.name = f"images/{new_file_name}"
+
+        media.save()
+
+        return Response({"message": "media updated successfully"}, status=200)
+    
+class DeleteMedias(APIView):
+    def post(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No media IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 获取要删除的相片记录
+        medias_to_delete = Media.objects.filter(id__in=ids).order_by('id')
+        
+        # 遍历并删除每个相片的文件
+        for media in medias_to_delete:
+            media_file_path = os.path.join(settings.MEDIA_ROOT, media.file.name)
+            if os.path.exists(media_file_path):
+                os.remove(media_file_path)
+        
+        # 删除数据库中的记录
+        medias_to_delete.delete()
+        return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)
 
 class CategoryList(APIView):
     def get(self, request):

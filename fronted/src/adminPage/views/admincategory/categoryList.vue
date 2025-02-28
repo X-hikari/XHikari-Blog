@@ -48,7 +48,7 @@
           <td class="id-column">{{ category.id }}</td>
           <td class="cover-column">
             <div class="cover-wrapper">
-              <img v-if="category.imageSrc" :src="category.imageSrc" alt="封面" />
+              <img v-if="category.imageSrc" :src="`http://localhost:8001${category.imageSrc}`" alt="封面" />
               <span v-else>暂无封面</span>
             </div>
           </td>
@@ -350,33 +350,33 @@ function handleBackgroundChange(event) {
 
 async function update_add_CategoryBase(method) {
   // 图片处理
-  let fileToServerName = null
   let imgId = null;
   try {
     const base64Image = cover.value.split(',')[1];
     const fileExtension = coverfile.value.name.split('.').pop();
     const hash = calculateSHA256(base64Image);
     const imgfileName = `${hash}.${fileExtension}`;
-    const uploadPath = `.\\fronted\\public\\images\\`;
-    // console.log(uploadPath);
 
-    const uploadSuccess = uploadImageToServer(coverfile.value, imgfileName, uploadPath);
-    if (!uploadSuccess) {
-      alert('文件上传失败！');
-      return;
-    }
-    fileToServerName = `.\\images\\${imgfileName}`;
+    // 创建一个新的 File 对象，重命名文件
+    const renamedFile = new File([coverfile.value], imgfileName, {
+      type: coverfile.value.type,
+    });
+
+    // 创建 FormData 对象并将重命名后的文件添加到其中
+    const formData = new FormData();
+    formData.append('file', renamedFile); // 上传重命名后的图片文件
+    formData.append('fileType', renamedFile.type); // 上传文件类型
+    formData.append('fileSize', renamedFile.size); // 上传文件大小
+
+    imgId = await uploadFileToServer(formData);
   } catch (error) {
-    // console.log("error!");
-  }
-  if (fileToServerName) {
-    imgId = await uploadFileToServer(fileToServerName, coverfile.value.type, coverfile.value.size);
+    console.log("error!");
   }
   // console.log(imgId);
   if (method === 'add') {
     await addNewCategory(imgId);
   } else if (method === 'edit') {
-    await updateNewCategory(imgId);
+    await updateCategory(imgId);
   }
 
   // 刷新当前页面
@@ -386,7 +386,7 @@ async function update_add_CategoryBase(method) {
   showModalEdit.value = false;
 }
 
-async function updateNewCategory(bannar_id) {
+async function updateCategory(bannar_id) {
   try {
     const formData = new FormData();
     formData.append('id', currentCategory.value.id);
@@ -439,18 +439,10 @@ async function addNewCategory(bannar_id) {
   }
 }
 
-async function uploadFileToServer(fileToServerName, fileType, fileSize) {
+async function uploadFileToServer(formData) {
   let uploadedFileId = null;  // 用于存储上传成功后的文件ID
 
   try {
-    // 创建 FormData 对象来处理文件上传
-    const formData = new FormData();
-    
-    // 将文件路径、文件类型和文件大小添加到 FormData
-    formData.append('file', fileToServerName);
-    formData.append('fileType', fileType);
-    formData.append('fileSize', fileSize);
-
     // 发送 POST 请求到后端接口
     const response = await axios.post('http://localhost:8001/api/admin/addMedia/', formData, {
       headers: {

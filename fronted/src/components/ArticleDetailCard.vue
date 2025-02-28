@@ -22,7 +22,7 @@
     
     <!-- Banner 图（如果有） -->
     <div v-if="data.banner_url" class="article-banner">
-      <img :src="data.banner_url" alt="Banner" />
+      <img :src="`http://localhost:8001${data.banner_url}`" alt="Banner" />
     </div>
 
     <!-- 摘要（如果有） -->

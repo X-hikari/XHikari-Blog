@@ -3,7 +3,7 @@ from django.db.models import Max
 
 # Create your models here.
 class Media(models.Model):
-    file = models.FileField(upload_to='uploads/')  # 存储文件的路径
+    file = models.FileField(upload_to='images/')  # 存储文件的路径
     file_type = models.CharField(max_length=50)  # 文件类型（如图片、视频等）
     file_size = models.PositiveIntegerField()  # 文件大小
     uploaded_at = models.DateTimeField(auto_now_add=True)  # 上传时间

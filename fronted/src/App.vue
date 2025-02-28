@@ -69,6 +69,7 @@ watch(route, (newRoute) => {
     document.querySelector('.main-content').classList.add('no-background');
     showTitle.value = false; // 在首页不显示标题
   } else if (newRoute.path === '/album' || newRoute.path === '/photo') {
+    document.querySelector('.main-content').classList.remove('no-background');
     showTitle.value = false;
   } else {
     document.querySelector('.main-content').classList.remove('no-background');

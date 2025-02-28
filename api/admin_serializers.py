@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.contenttypes.models import ContentType
 import os
 from .models import *
 
@@ -95,7 +96,46 @@ class CategoryAllSerializer(serializers.ModelSerializer):
             article_count += self.get_article_count(child)
         
         return article_count
+
+class MediaSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+    file_name = serializers.SerializerMethodField()
+    uploaded_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    used = serializers.SerializerMethodField()
     
+    class Meta:
+        model = Media
+        fields = ['id', 'file_url', 'file_name', 'file_type', 'file_size', 'uploaded_at', 'used']
+
+    def get_file_url(self, obj):
+        if obj.file:
+            return obj.file.url  # Django 会自动生成 URL
+        return None
+
+    def get_file_name(self, obj):
+        if obj.file:
+            return os.path.splitext(os.path.basename(obj.file.name))[0]  # 先去掉路径，再去掉后缀
+        return None
+    
+    def get_used(self, obj):
+        # 获取所有模型的外键字段，检查是否引用了 Media
+        used = False
+        
+        # 只考虑 Article 和 Category 这两个模型
+        for model_class in [Article, Category]:
+            for field in model_class._meta.get_fields():
+                if isinstance(field, models.ForeignKey) and field.related_model == Media:
+                    # 如果外键字段指向 Media 模型
+                    related_field_name = field.name
+                    # 动态检查是否引用了当前 Media
+                    if model_class.objects.filter(**{related_field_name: obj}).exists():
+                        used = True
+                        break
+            if used:
+                break
+        
+        return used  # 如果有引用则返回 True，否则返回 False
+
 class AlbumPhotoSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
