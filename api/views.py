@@ -7,6 +7,29 @@ from .serializers import *
 import os
 import pytz
 
+class HomeNumberList(APIView):
+    def get(self, request):
+        try:
+            # 获取各模型的数量统计
+            album_count = Album.objects.all().count()
+            category_count = Category.objects.all().count()
+            article_count = Article.objects.all().count()
+
+            response_data = {
+                "album_count": album_count,
+                "category_count": category_count,
+                "article_count": article_count
+            }
+
+            return Response(response_data)
+
+        except Exception as e:
+            # 异常处理（可根据需要自定义错误响应）
+            return Response(
+                {"error": f"获取数据时发生错误: {str(e)}"},
+                status=500
+            )
+
 class ArticleList(APIView):
     def get(self, request):
         category_id = request.GET.get('id')

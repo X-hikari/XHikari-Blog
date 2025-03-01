@@ -33,7 +33,7 @@
   .website-info {
     width: 100%;
     max-width: 600px;
-    margin: auto;
+    /* margin: auto; */
     padding: 20px;
     background-color: white;
     border-radius: 8px;

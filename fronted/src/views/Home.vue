@@ -15,7 +15,13 @@
     <div class="left-part">
       <Announcement />
       <WebSite />
-      <UserCard /> <!-- 左侧部分：UserCard 卡片 -->
+      <div class="sticky-header">
+        <UserCard
+          :articleNumber="articleNumber"
+          :categoryNumber="categoryNumber"
+          :albumNumber="albumNumber"
+        /> <!-- 左侧部分：UserCard 卡片 -->
+      </div>
     </div>
     <div class="right-part">
       <!-- 右侧部分：文章卡片 -->
@@ -56,6 +62,10 @@ const articles = ref([]);  // 声明 articles
 const page = ref(1);  // 当前页数
 const pageSize = 8;  // 每页显示 8 个文章
 
+const articleNumber = ref(0);
+const categoryNumber = ref(0);
+const albumNumber = ref(0);
+
 // 控制文字显示的定时器
 let interval = null;
 
@@ -78,6 +88,17 @@ onMounted(() => {
     .catch(error => {
       console.error('Error fetching articles:', error);
     });
+
+  axios.get('http://localhost:8001/api/homenumber/')
+  .then(response => {
+    articleNumber.value = response.data.article_count;
+    categoryNumber.value = response.data.category_count;
+    albumNumber.value = response.data.album_count;
+    console.log(articleNumber.value)
+  })
+  .catch(error => {
+    console.error('Error fetching articles:', error);
+  });
 });
 
 onUnmounted(() => {
@@ -169,7 +190,8 @@ const changePage = (newPage) => {
   margin-top: 0px;
   background-color: rgba(241, 249, 254, 1);
   z-index: 2;
-  align-items: flex-start;
+  /* align-items: flex-start; */
+  align-items: stretch;
 }
 
 .left-part {
@@ -179,7 +201,17 @@ const changePage = (newPage) => {
   justify-content: flex-start;
   padding: 15px;
   padding-left: 180px;
-  gap: 20px;
+}
+
+.left-part > * {
+  margin-bottom: 15px; /* 设置子元素之间的间隔 */
+}
+
+.sticky-header {
+  position: -webkit-sticky; /* Safari 支持的前缀 */
+  position: sticky;
+  top: 50px; /* 设置距离页面顶部的固定距离 */
+  padding: 10px;
 }
 
 .right-part {

@@ -8,7 +8,7 @@
           </div>
           <a href="#" class="login"><i class="iconfont icon-denglu-copy"></i> 登录</a>
           <button @click="toggleTheme">
-            <i :class="isDarkMode ? 'icon-light-mode' : 'icon-dark-mode'"></i>
+            <i :class="isDark ? 'icon-light-mode' : 'icon-dark-mode'"></i>
           </button>
         </div>
   
@@ -47,19 +47,20 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
 import TimeWatch from '@/components/TimeWatch.vue';
 
-const isDarkMode = ref(false);
+const isDark = ref(localStorage.getItem("theme") === "dark");
 const route = useRoute(); // 获取当前路由对象
 const showTitle = ref(false); // 用于控制标题显示
 
 const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.body.classList.toggle('dark-mode', isDarkMode.value);
+  isDark.value = !isDark.value;
+  document.documentElement.classList.toggle("dark-mode", isDark.value);
+  localStorage.setItem("theme", isDark.value ? "dark" : "light");
 };
 
 onMounted(() => {
   // 初始化时根据当前主题设置
   if (document.body.classList.contains('dark-mode')) {
-    isDarkMode.value = true;
+    isDark.value = true;
   }
 });
 
@@ -68,7 +69,7 @@ watch(route, (newRoute) => {
   if (newRoute.path === '/home') {
     document.querySelector('.main-content').classList.add('no-background');
     showTitle.value = false; // 在首页不显示标题
-  } else if (newRoute.path === '/album' || newRoute.path === '/photo') {
+  } else if (newRoute.path === '/album' || newRoute.path === '/photo' || newRoute.path === '/emotion') {
     document.querySelector('.main-content').classList.remove('no-background');
     showTitle.value = false;
   } else {
@@ -93,6 +94,8 @@ watch(route, (newRoute) => {
   top: 0;        
   left: 0;
   z-index: 1000;     /* 确保导航栏在其他内容之上 */
+  user-select: none;
+  outline: none !important;
 }
 
 .header-content {

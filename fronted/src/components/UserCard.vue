@@ -14,31 +14,65 @@
     <div class="user-card__stats">
       <div>
         <span>文章 </span>
-        <span> 22</span>
+        <span> {{ articleNumber }}</span>
       </div>
       <div>
         <span>分类 </span>
-        <span> 4</span>
+        <span> {{ categoryNumber }}</span>
       </div>
       <div>
-        <span>标签 </span>
-        <span> 22</span>
+        <span>相册 </span>
+        <span> {{ albumNumber }}</span>
       </div>
     </div>
 
     <!-- 社交图标 -->
     <div class="user-card__social-icons">
-      <i class="iconfont icon-weixin" @click="handleIconClick('微信')"></i>
-      <i class="iconfont icon-QQ" @click="handleIconClick('QQ')"></i>
-      <i class="iconfont icon-github-fill" @click="handleIconClick('GitHub')"></i>
-      <i class="iconfont icon-bilibili-line" @click="handleIconClick('Bilibili')"></i>
+      <!-- 微信 -->
+    <div class="icon-container" @mouseenter="hoveredIcon = '微信'" @mouseleave="hoveredIcon = null">
+      <i class="iconfont icon-weixin" @click.stop></i>
+      <div v-show="hoveredIcon === '微信'" class="qrcode-container">
+        <img src="/relation/Wechat-QRcode.jpg" alt="微信二维码" class="qrcode">
+      </div>
+    </div>
+
+    <!-- QQ -->
+    <div class="icon-container" @mouseenter="hoveredIcon = 'QQ'" @mouseleave="hoveredIcon = null">
+      <i class="iconfont icon-QQ" @click.stop></i>
+      <div v-show="hoveredIcon === 'QQ'" class="qrcode-container">
+        <img src="/relation/QQ-QRcode.jpg" alt="QQ二维码" class="qrcode">
+      </div>
+    </div>
+      <i class="iconfont icon-github-fill" @click="openLink('https://github.com/X-hikari/XHikari-Blog')"></i>
+      <i class="iconfont icon-bilibili-line" @click="openLink('https://space.bilibili.com/505788992?spm_id_from=333.1007.0.0')"></i>
     </div>
   </div>
 </template>
 
 <script setup>
-const handleIconClick = (platform) => {
-  alert(`你点击了 ${platform} 图标`);
+import { ref } from 'vue';
+
+const hoveredIcon = ref(null)
+
+const props = defineProps({
+  articleNumber: {
+    type: Number,
+    default: 0
+  },
+  categoryNumber: {
+    type: Number,
+    default: 0
+  },
+  albumNumber: {
+    type: Number,
+    default: 0
+  }
+})
+
+const openLink = (link) => {
+  if (typeof window !== 'undefined') {
+    window.open(link, '_blank');
+  }
 }
 </script>
 
@@ -48,9 +82,11 @@ const handleIconClick = (platform) => {
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  /* overflow: hidden; */
   text-align: center;
   font-family: Arial, sans-serif;
+  user-select: none;
+  outline: none !important;
 }
 
 .user-card__cover {
@@ -128,5 +164,45 @@ const handleIconClick = (platform) => {
 
 .user-card__social-icons i:hover {
   color: #0073e6;
+}
+
+.icon-container {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.icon-container:hover {
+  transform: scale(1.1);
+}
+
+.qrcode-container {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.qrcode {
+  width: 200px;
+  height: 260px;
+  display: block;
+}
+
+/* 二维码箭头样式 */
+.qrcode-container::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent white transparent
 }
 </style>
