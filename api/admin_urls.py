@@ -28,4 +28,10 @@ urlpatterns = [
     path('addAlbum/', admin_views.AddAlbum.as_view(), name='add-album'),
     path('updateAlbum/', admin_views.UpdateAlbum.as_view(), name='update-album'),
     path('deleteAlbums/', admin_views.DeleteAlbum.as_view(), name='delete-album'),
+    path('searchEmotion/', admin_views.EmotionList.as_view(), name='search-emotion'),
+    path('addEmotion/', admin_views.AddEmotion.as_view(), name='add-emotion'),
+    path('deleteEmotions/', admin_views.DeleteEmotions.as_view(), name='delete-emotions'),
+    path('addEmotionMedia/', admin_views.AddEmotionMedia.as_view(), name='add-emotion-media'),
+    path('emotionDetail/', admin_views.EmotionDetail.as_view(), name='emotion-detail'),
+    path('updateEmotion/', admin_views.UpdateEmotion.as_view(), name='update-emotion')
 ]

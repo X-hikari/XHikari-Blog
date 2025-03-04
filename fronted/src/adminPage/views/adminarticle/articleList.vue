@@ -686,7 +686,7 @@ th {
 }
 
 .action-column {
-  width: 120px;
+  width: 130px;
   text-align: center;
 }
 

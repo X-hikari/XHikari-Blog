@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Max
+import os
 
 # Create your models here.
 class Media(models.Model):
@@ -126,7 +127,7 @@ class Article(models.Model):
     comment_num = models.IntegerField(default=0)
 
     # 外键
-    user_id = models.ForeignKey(User, to_field='UID',  on_delete=models.CASCADE, related_name='articles')
+    user_id = models.ForeignKey(User, to_field='UID', on_delete=models.CASCADE, related_name='articles')
     category_id = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
     bannar_id = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -160,3 +161,25 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user_id.username} on {self.article_id.title}"
+
+class Emotion(models.Model):
+    content = models.TextField(verbose_name="内容", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="发布时间")
+    updated_at = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    status = models.PositiveSmallIntegerField(default=1, choices=[
+        (1, '公开'),
+        (2, '私密')
+    ])
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['status']),
+        ]
+
+class EmotionMedia(models.Model):
+    file = models.FileField(upload_to='emotions/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    emotion = models.ForeignKey(Emotion, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.file.name

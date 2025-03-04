@@ -107,3 +107,15 @@ class AlbumPhotoSerializer(serializers.ModelSerializer):
     # 通过 `to_representation` 方法，返回一个包含所有 file 路径的列表
     def to_representation(self, instance):
         return instance.file.url
+    
+class EmotionSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    images = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Emotion
+        fields =  ['content', 'created_at', 'images']
+
+    def get_images(self, obj):
+        images = EmotionMedia.objects.filter(emotion_id=obj.id).order_by('id')
+        return [image.file.url for image in images] if images else None

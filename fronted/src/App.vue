@@ -69,7 +69,7 @@ watch(route, (newRoute) => {
   if (newRoute.path === '/home') {
     document.querySelector('.main-content').classList.add('no-background');
     showTitle.value = false; // 在首页不显示标题
-  } else if (newRoute.path === '/album' || newRoute.path === '/photo' || newRoute.path === '/emotion') {
+  } else if (newRoute.path === '/album' || newRoute.path === '/photo') {
     document.querySelector('.main-content').classList.remove('no-background');
     showTitle.value = false;
   } else {
@@ -267,6 +267,7 @@ button {
   /* opacity: 0.8; */
   padding: 0;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  user-select: none;
 }
 
 .main-content::before {

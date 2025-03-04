@@ -4,6 +4,7 @@ from rest_framework.exceptions import NotFound
 from django.utils import timezone
 from .models import *
 from .serializers import *
+from datetime import datetime
 import os
 import pytz
 
@@ -95,3 +96,26 @@ class AlbumDetailView(APIView):
             "albumName": album.name,
             "photos": photo_serializer.data
         })
+    
+class EmotionList(APIView):
+    def get(self, request):
+        date = request.GET.get('date')
+
+        if date:
+            date_obj = datetime.strptime(date, '%Y-%m-%d')
+            # 获取该日期的起始和结束时间
+            start_of_day = date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = date_obj.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+            # 查找在这个日期范围内的说说
+            emotions = Emotion.objects.filter(
+                status=1,
+                created_at__gte=start_of_day,
+                created_at__lte=end_of_day
+            ).order_by('-id')
+        else:
+            emotions = Emotion.objects.filter(status=1).order_by('-id')
+
+        serializer = EmotionSerializer(emotions, many=True)
+        return Response({"data": serializer.data})
+

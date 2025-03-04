@@ -304,11 +304,11 @@ class UpdateMedia(APIView):
 
             # 创建新的文件名
             new_file_name = f"{media_name}{file_extension}"
-            print(f"New file name: {new_file_name}")
+            # print(f"New file name: {new_file_name}")
 
             # 拼接新的完整路径
             new_file_path = os.path.join(file_dir, new_file_name)
-            print(f"New file path: {new_file_path}")
+            # print(f"New file path: {new_file_path}")
 
             try:
                 # 重命名文件
@@ -513,7 +513,6 @@ class UploadPhoto(APIView):
             "id": media_instance.id,
             "file_url": media_instance.file.url  # Django 自动生成 URL
         }, status=status.HTTP_201_CREATED)
-    
 
 class AlbumPhotoList(APIView):
     def get(self, request):
@@ -680,3 +679,145 @@ class DeleteAlbum(APIView):
         
         Album.objects.filter(id__in=ids).delete()
         return Response({"detail": "Categories deleted successfully."}, status=status.HTTP_200_OK)
+
+class EmotionList(APIView):
+    def get(self, request):
+        limit = request.GET.get('limit')
+        if limit:
+            emotions = Emotion.objects.filter(status=limit)
+        else:
+            emotions = Emotion.objects.all()
+        
+        paginator = Pagination()
+        paginated_emotions = paginator.paginate_queryset(emotions, request)
+        serializer = EmotionSerializer(paginated_emotions, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+class AddEmotion(APIView):
+    def post(self, request):
+        content = request.data.get('content', '')
+        limit = request.data.get('limit')
+        
+        if limit == '公开':
+            limit = 1
+        elif limit == '私密':
+            limit = 2
+        else:
+            return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+        current_time = timezone.now()
+
+        emotion = Emotion.objects.create(
+            content=content,
+            status=limit,
+            created_at=current_time,
+            updated_at=current_time
+        )
+        
+        return Response({"emotionId": emotion.id}, status=status.HTTP_201_CREATED)
+
+class DeleteEmotions(APIView):
+    def post(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No category IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        emotions = Emotion.objects.filter(id__in=ids)
+        if not emotions.exists():
+            return Response({"detail": "No emotions found with the provided IDs."}, status=status.HTTP_404_NOT_FOUND)
+
+        for emotion in emotions:
+            # 获取与当前 Emotion 相关的所有 EmotionMedia 实例
+            emotion_media = EmotionMedia.objects.filter(emotion=emotion)
+            for media in emotion_media:
+                # 删除与该 EmotionMedia 相关联的文件
+                if media.file and os.path.isfile(media.file.path):
+                    os.remove(media.file.path)  # 删除实际的文件
+
+            emotion_media.delete()
+
+        emotions.delete()
+
+        return Response({"detail": "Emotions and related media files have been deleted."}, status=status.HTTP_200_OK)
+
+class AddEmotionMedia(APIView):
+    def post(self, request):
+        emotion_id = request.data.get('emotionId')
+        images = request.FILES.getlist('images[]')
+
+        timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+        try:
+            emotion = Emotion.objects.get(id=emotion_id)
+        except Emotion.DoesNotExist:
+            return Response({"error": "没有这条说说"}, status=status.HTTP_404_NOT_FOUND)
+
+        for idx, image in enumerate(images, start=1):  
+            ext = os.path.splitext(image.name)[1]
+            new_filename = f"Emotion{timestamp}_{idx}{ext}"
+            image.name = new_filename
+            emotionMedia_instance = EmotionMedia.objects.create(
+                file = image,
+                emotion = emotion
+            )
+
+        return Response({
+            "image_count": len(images),
+        }, status=status.HTTP_201_CREATED)
+    
+class EmotionDetail(APIView):
+    def get(self, request):
+        emotion_id = request.GET.get('emotionId')
+
+        try:
+            emotion = Emotion.objects.get(id=emotion_id)
+        except Emotion.DoesNotExist:
+            return Response({"detail": "Emotion not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = EmotionDetailSerializer(emotion)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UpdateEmotion(APIView):
+    def post(self, request):
+        emotion_id = request.data.get('emotionId')
+        images = request.data.getlist('images[]')
+        newimages = request.FILES.getlist('newimages[]')
+        limit = request.data.get('limit')
+        content = request.data.get('content', '')
+        timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+
+        images = list(map(lambda x: x[7:], images))[:-1]
+        if limit == "公开":
+            limit = 1
+        elif limit == "私密":
+            limit = 0 
+
+        try:
+            emotion = Emotion.objects.get(id=emotion_id)
+        except Emotion.DoesNotExist:
+            return Response({"detail": "Emotion not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 删除原本的媒体文件
+        current_media_files = EmotionMedia.objects.filter(emotion=emotion)
+        current_media_files_in = EmotionMedia.objects.filter(file__in=images)
+        media_files_to_delete = current_media_files.exclude(file__in=images)
+        for media in media_files_to_delete:
+            if media.file and os.path.isfile(media.file.path):
+                os.remove(media.file.path)
+        media_files_to_delete.delete()
+
+        # 添加新的媒体文件
+        for idx, image in enumerate(newimages, start=1):  
+            ext = os.path.splitext(image.name)[1]
+            new_filename = f"Emotion{timestamp}_{idx}{ext}"
+            image.name = new_filename
+            emotionMedia_instance = EmotionMedia.objects.create(
+                file = image,
+                emotion = emotion
+            )
+        
+        emotion.content = content
+        emotion.status = limit
+        emotion.updated_at = timezone.now()
+        emotion.save()
+
+        return Response({}, status=status.HTTP_200_OK)

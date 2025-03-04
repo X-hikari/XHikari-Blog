@@ -15,6 +15,8 @@ declare module 'vue' {
     Catalogues: typeof import('./src/components/Catalogues/Catalogues.vue')['default']
     ClassifyCard: typeof import('./src/components/Classify/ClassifyCard.vue')['default']
     ClassyItem: typeof import('./src/components/Classify/ClassyItem.vue')['default']
+    EmotionCalendar: typeof import('./src/components/Emotion/EmotionCalendar.vue')['default']
+    EmotionCard: typeof import('./src/components/Emotion/EmotionCard.vue')['default']
     Pagination: typeof import('./src/components/Pagination.vue')['default']
     PhotoBig: typeof import('./src/components/Album/PhotoBig.vue')['default']
     PhotoList: typeof import('./src/components/Album/PhotoList.vue')['default']

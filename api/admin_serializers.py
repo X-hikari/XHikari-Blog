@@ -170,3 +170,40 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     def get_count(self, obj):
         return obj.albumphoto_set.count()
+
+class EmotionSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Emotion
+        fields = ['id', 'content', 'created_at', 'status']
+
+    def get_status(self, obj):
+        if obj.status == 1:
+            return '公开'
+        elif obj.status == 2:
+            return '私密'
+        
+class EmotionDetailSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    status = serializers.SerializerMethodField()
+    media_files = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Emotion
+        fields = ['id', 'content', 'created_at', 'updated_at', 'status', 'media_files']
+
+    def get_status(self, obj):
+        # 根据 status 字段值返回 公开 / 私密
+        if obj.status == 1:
+            return '公开'
+        elif obj.status == 2:
+            return '私密'
+        return '未知'
+    
+    def get_media_files(self, obj):
+        media_files = obj.emotionmedia_set.all()
+        media_urls = [media.file.url for media in media_files if media.file]
+        return media_urls

@@ -62,7 +62,7 @@ onMounted(() => {
   axios.get(`http://localhost:8001/api/category?id=${categoryId.value}`)
   .then(response => {
     data.value = response.data;
-    console.log(data.value.banner_url);
+    // console.log(data.value.banner_url);
   })
   .catch(error => {
     console.error('Error fetching articles:', error);
