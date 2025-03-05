@@ -355,7 +355,7 @@ const submitEmotion = async () => {
 const updateEmotion = async () => {
   const formData = new FormData();
   formData.append('emotionId', currentEmotion.value.id);
-  formData.append('content', currentEmotion.valuecontent);
+  formData.append('content', currentEmotion.value.content);
   formData.append('limit', currentEmotion.value.limit);
   editImages.value.forEach((image) => {
     formData.append('images[]', image);
@@ -370,7 +370,7 @@ const updateEmotion = async () => {
     });
     
     showModalEdit.value = false;
-    currentEmotion = '';
+    currentEmotion.value = {};
     editImages.value = [];
     fetchEmotions();
   } catch (error) {

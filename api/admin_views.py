@@ -784,12 +784,16 @@ class UpdateEmotion(APIView):
         limit = request.data.get('limit')
         content = request.data.get('content', '')
         timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+        print("处理前的: ", images)
 
-        images = list(map(lambda x: x[7:], images))[:-1]
+        print(newimages)
+
+        images = list(map(lambda x: x[7:], images))
+        print("处理后的: ",images)
         if limit == "公开":
             limit = 1
         elif limit == "私密":
-            limit = 0 
+            limit = 2 
 
         try:
             emotion = Emotion.objects.get(id=emotion_id)
@@ -798,8 +802,9 @@ class UpdateEmotion(APIView):
 
         # 删除原本的媒体文件
         current_media_files = EmotionMedia.objects.filter(emotion=emotion)
-        current_media_files_in = EmotionMedia.objects.filter(file__in=images)
+        # current_media_files_in = EmotionMedia.objects.filter(file__in=images)
         media_files_to_delete = current_media_files.exclude(file__in=images)
+        print(media_files_to_delete)
         for media in media_files_to_delete:
             if media.file and os.path.isfile(media.file.path):
                 os.remove(media.file.path)

@@ -24,6 +24,7 @@
     </div>
     <!-- 回到当前月份按钮 -->
     <button @click="resetToCurrentMonth" class="reset-button">回到当前月份</button>
+    <button @click="updateAll" class="reset-button">查看所有说说</button>
   </div>
 </template>
 
@@ -35,7 +36,7 @@ const emit = defineEmits('updateDate');
 
 // 传入的时间参数列表
 const props = defineProps({
-  dateList: Array // ["2025-03-04 01:50:49", "2025-03-10 12:00:00"]
+  dateList: Array
 });
 
 // 获取所有可点击的日期（去除时分秒）
@@ -103,6 +104,10 @@ const updateDate = (day) => {
     emit('updateDate', day.date);
   }
 };
+
+const updateAll = () => {
+  emit('updateDate', '');
+}
 
 // 回到当前月份
 const resetToCurrentMonth = () => {
@@ -175,7 +180,7 @@ const resetToCurrentMonth = () => {
 }
 
 .reset-button {
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 8px 16px;
   font-size: 16px;
   cursor: pointer;

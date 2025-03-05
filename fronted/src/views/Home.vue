@@ -4,7 +4,7 @@
     <img :src="imageSrc" alt="Background Image" />
     <div class="theme">{{ themeText }}</div>
     <div class="overlay-text">{{ displayedText }}</div>
-    <div class="icon-circle">
+    <div class="icon-circle" @click="scrollToContentBottom">
       <i class="iconfont icon-arrow-down-s-line" style="font-size: 30px;"></i>
     </div>
     <Wave />
@@ -94,7 +94,7 @@ onMounted(() => {
     articleNumber.value = response.data.article_count;
     categoryNumber.value = response.data.category_count;
     albumNumber.value = response.data.album_count;
-    console.log(articleNumber.value)
+    // console.log(articleNumber.value);
   })
   .catch(error => {
     console.error('Error fetching articles:', error);
@@ -104,6 +104,16 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(interval);
 });
+
+const scrollToContentBottom = () => {
+  const contentBottom = document.querySelector('.content-bottom');
+  if (contentBottom) {
+    contentBottom.scrollIntoView({
+      behavior: 'smooth',  // 平滑滚动
+      block: 'start',      // 滚动到目标元素的顶部
+    });
+  }
+}
 
 // 计算分页后的文章
 const totalPages = computed(() => {
@@ -171,7 +181,7 @@ const changePage = (newPage) => {
 
 .icon-circle {
   position: absolute;
-  bottom: 10%;
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
   width: 40px;
@@ -182,6 +192,7 @@ const changePage = (newPage) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .content-bottom {

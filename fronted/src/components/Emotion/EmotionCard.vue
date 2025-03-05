@@ -6,7 +6,7 @@
       <span class="time"><i class="iconfont icon-shizhong"></i> {{ formattedTime }}</span>
     </div>
     <div v-if="text" class="text-content">{{ text }}</div>
-    <div v-if="images.length" class="image-grid">
+    <div v-if="images" class="image-grid">
       <img v-for="(img, index) in images" 
       :key="index" 
       :src="`http://localhost:8001${img}`" 

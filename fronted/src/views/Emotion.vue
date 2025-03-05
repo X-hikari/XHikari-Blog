@@ -79,6 +79,8 @@ const fetchEmotions = async () => {
   });
   if (response.status == 200) {
     emotions.value = response.data.data;
+    visibleEmotions.value = [];
+    loadedCount = 0;
     loadMore(); // 初次加载
     window.addEventListener('scroll', onScroll);
   }
