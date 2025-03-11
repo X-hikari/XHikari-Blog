@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- 后台页面挂载点 -->
+    <div id="admin-app" style="display: none;"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      // 检查当前路径是否包含 "/admin" 来判断是否需要加载后台管理页面
+      if (window.location.pathname.startsWith('/admin')) {
+        // 如果路径为后台路径，加载后台脚本
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/src/admin.js'; // 后台入口脚本
+        document.body.appendChild(script);
+
+        // 显示后台挂载点，隐藏前台
+        document.getElementById('admin-app').style.display = 'block';
+        document.getElementById('app').style.display = 'none';
+      } else {
+        // 如果是前台路径，确保后台挂载点不显示
+        document.getElementById('admin-app').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
