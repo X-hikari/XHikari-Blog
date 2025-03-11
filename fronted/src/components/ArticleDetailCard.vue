@@ -10,13 +10,13 @@
         <span v-if="data.category" class="meta-item">
           所属专栏：<strong>{{ data.category }}</strong>
         </span>
-        <span class="meta-item">浏览量：{{ data.visits }} 次</span>
+        <span class="meta-item" v-if="data.visits" >浏览量：{{ data.visits }} 次</span>
       </div>
       
       <!-- 时间信息 -->
       <div class="meta-row">
-        <span class="meta-item">创建时间：{{ data.created_at }}</span>
-        <span class="meta-item">更新时间：{{ data.updated_at }}</span>
+        <span class="meta-item" v-if="data.created_at">创建时间：{{ data.created_at }}</span>
+        <span class="meta-item" v-if="data.updated_at">更新时间：{{ data.updated_at }}</span>
       </div>
     </div>
     

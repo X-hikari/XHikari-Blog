@@ -5,6 +5,8 @@ from django.utils import timezone
 from .models import *
 from .serializers import *
 from datetime import datetime
+from django.conf import settings
+from rest_framework import status
 import os
 import pytz
 
@@ -140,3 +142,14 @@ class AddMessage(APIView):
         message.save()
 
         return Response({"message": "Message created successfully"}, status=201)
+
+class AboutDetail(APIView):
+    def get(self, request):
+        # 读取 about.md 文件
+        file_path = os.path.join(settings.BASE_DIR, "content", "about.md")
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                md_content = f.read()
+            return Response({"title": "关于", "content": md_content}, status=status.HTTP_200_OK)
+        except FileNotFoundError:
+            return Response({"error": "about.md not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -45,7 +45,7 @@ const closeMessage = () => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .message-card {

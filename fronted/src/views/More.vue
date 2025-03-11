@@ -31,7 +31,6 @@ import ArticleDetailCard from '@/components/ArticleDetailCard.vue';
 import MarkdownIt from 'markdown-it';
 
 const route = useRoute();
-const articleId = ref(route.query.id); // 获取 URL 中的 id 参数
 
 const article = ref(null); // 存储文章数据
 const md = new MarkdownIt();
@@ -44,23 +43,20 @@ const parentId = ref([]);
 const updateActiveRoot = (rootId) => {
   activeRoot.value = rootId;
   const result = findParentIdByActiveRoot(headings.value, activeRoot.value);
-  parentId.value = result;
-  // console.log("parentId", parentId.value);
 };
 
 // 更新当前跳转目录
 const updateJumpRoot = (rootId) => {
   jumpRoot.value = rootId;
-  // console.log(jumpRoot.value);
-  // console.log("parentId", parentId.value);
 };
 
-async function fetchArticle(id) {
-  axios.get(`http://localhost:8001/api/article?id=${id}`)
+async function fetchArticle() {
+  axios.get(`http://localhost:8001/api/about`)
   .then(response => {
     article.value = response.data;
+    console.log(response.data);
+    console.log(article.value);
     headings.value = parseMarkdownWithHeadings(article.value.content);
-    console.log(headings.value);
   })
   .catch(error => {
     console.error('Error fetching article:', error);
@@ -69,9 +65,7 @@ async function fetchArticle(id) {
 
 // 初次加载时调用
 onMounted(() => {
-  if (articleId.value) {
-    fetchArticle(articleId.value);
-  };
+  fetchArticle();
 });
 
 function findParentIdByActiveRoot(headings, activeRoot) {
@@ -176,7 +170,7 @@ watch(
 }
 
 .left-part {
-  width: 30%; /* 左边部分占据3的比例 */
+  width: 25%; /* 左边部分占据3的比例 */
   position: relative; /* 确保 sticky 能工作 */
   height: 100%; /* 确保左边部分高度足够 */
 }
@@ -189,7 +183,7 @@ watch(
 }
 
 .right-part {
-  width: 70%; /* 右边部分占据7的比例 */
+  width: 60%; /* 右边部分占据7的比例 */
   height: 100%;
   margin-bottom: 1000px;
 }
