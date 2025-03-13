@@ -12,5 +12,6 @@ urlpatterns = [
     path('emotions/', views.EmotionList.as_view(), name='emotion-list'),
     path('messages/', views.MessageList.as_view(), name='message-list'),
     path('addmessage/', views.AddMessage.as_view(), name='add-message'),
-    path('about/', views.AboutDetail.as_view(), name='about')
+    path('about/', views.AboutDetail.as_view(), name='about'),
+    path('searcharticles/', views.SearchArticles.as_view(), name='search-articles'),
 ]

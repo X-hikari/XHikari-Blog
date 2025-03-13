@@ -8,20 +8,22 @@
     <div v-if="text" class="text-content">{{ text }}</div> <!-- 使用默认插值绑定 -->
     <div v-if="images" class="image-grid">
       <img v-for="(img, index) in images" 
-      :key="index" 
-      :src="`http://localhost:8001${img}`" 
-      @click="showFullScreen(index)"
-      class="image-item" />
+        :key="index" 
+        :src="`http://localhost:8001${img}`" 
+        @click="showFullScreen(index)"
+        class="image-item" />
     </div>
   </div>
 
   <!-- 大图显示 -->
   <div v-if="isFullScreen" class="full-screen" @click="closeFullScreen">
-    <img
-      :src="`http://localhost:8001${images[currentIndex]}`"
-      class="full-screen-img"
-      :alt="'full photo ' + currentIndex"
-    />
+    <div class="full-screen-img-container" @click.stop> <!-- 使用 @click.stop 阻止事件冒泡 -->
+      <img
+        :src="`http://localhost:8001${images[currentIndex]}`"
+        class="full-screen-img"
+        :alt="'full photo ' + currentIndex"
+      />
+    </div>
   </div>
 </template>
 
@@ -39,6 +41,17 @@ const props = defineProps({
 
 const formattedDate = computed(() => props.created_at?.split(' ')[0] || '');
 const formattedTime = computed(() => props.created_at?.split(' ')[1] || '');
+
+// 显示大图
+const showFullScreen = (index) => {
+  currentIndex.value = index;
+  isFullScreen.value = true;
+};
+
+// 关闭大屏模式
+const closeFullScreen = () => {
+  isFullScreen.value = false;
+};
 </script>
 
 <style scoped>
@@ -76,7 +89,7 @@ const formattedTime = computed(() => props.created_at?.split(' ')[1] || '');
   color: #333;
   margin-top: 24px;
   margin-bottom: 12px;
-  white-space: pre-wrap; /* 保持空格和换行 */
+  white-space: pre-wrap;
 }
 
 .image-grid {
@@ -104,6 +117,14 @@ const formattedTime = computed(() => props.created_at?.split(' ')[1] || '');
   justify-content: center;
   align-items: center;
   z-index: 999;
+}
+
+.full-screen-img-container {
+  max-width: 70%;
+  max-height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .full-screen-img {

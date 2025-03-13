@@ -19,11 +19,11 @@
           <router-link to="/emotion"><i class="iconfont icon-comiisfashuoshuo"></i> 说说</router-link>
           <router-link to="/message"><i class="iconfont icon-liuyanban-05"></i> 留言</router-link>
           <router-link to="/more"><i class="iconfont icon-gengduo"></i> 更多</router-link>
-          <router-link to="/" class="search-link">
+          <router-link :to="{ path: '/search', query: { q: searchQuery } }" @click="clearSearch" class="search-link">
             <i class="iconfont icon-sousuo"></i> 搜索
-            <!-- 搜索框 -->
           </router-link>
-          <input type="text" class="search-input" placeholder="搜索..." />
+          <!-- 搜索框 -->
+          <input type="text" v-model="searchQuery" class="search-input" placeholder="搜索..." />
         </nav>
       </div>
     </header>
@@ -54,6 +54,7 @@ import MusicPlayer from './components/Music/MusicPlayer.vue';
 const isDark = ref(localStorage.getItem("theme") === "dark");
 const route = useRoute(); // 获取当前路由对象
 const showTitle = ref(false); // 用于控制标题显示
+const searchQuery = ref(""); // 搜索框的绑定值
 
 const toggleTheme = () => {
   isDark.value = !isDark.value;
@@ -81,6 +82,10 @@ watch(route, (newRoute) => {
     showTitle.value = true; // 非首页显示标题
   }
 });
+
+const clearSearch = () => {
+  searchQuery.value = ''; // 清空搜索框
+}
 </script>
 
 <style scoped>

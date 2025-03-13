@@ -8,6 +8,7 @@ import Photo from '@/views/Photo.vue';
 import Emotion from '@/views/Emotion.vue';
 import Message from '@/views/Message.vue';
 import More from '@/views/More.vue';
+import Search from '@/views/Search.vue';
 
 const routes = [
   { path: '/', redirect: '/home' }, // 自动重定向到 /home
@@ -19,7 +20,8 @@ const routes = [
   { path: '/photo', name: 'Photo', component: Photo },
   { path: '/emotion', name: 'Emotion', component: Emotion},
   { path: '/message', name: 'Message', component: Message},
-  { path: '/more', name: 'More', component: More}
+  { path: '/more', name: 'More', component: More},
+  { path: '/search', name: 'Search', component: Search}
 ]
 
 const router = createRouter({

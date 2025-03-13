@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+from django.shortcuts import render
+from haystack.query import SearchQuerySet
 from django.utils import timezone
 from .models import *
 from .serializers import *
@@ -153,3 +155,20 @@ class AboutDetail(APIView):
             return Response({"title": "关于", "content": md_content}, status=status.HTTP_200_OK)
         except FileNotFoundError:
             return Response({"error": "about.md not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class SearchArticles(APIView):
+    def get(self, request):
+        query = request.GET.get('q', '')
+        if query:
+            # 使用 SearchQuerySet 进行全文搜索
+            results = SearchQuerySet().filter(content=query)
+            # print(f"Search Results: {results}")
+
+            # 获取与搜索结果匹配的所有文章
+            articles = Article.objects.filter(id__in=[result.pk for result in results])
+            serializer = ArticleAllSerializer(articles, many=True)
+            
+            return Response({'results': serializer.data, 'query': query})
+        else:
+            return Response({'results': [], 'query': query}, status=status.HTTP_200_OK)
+

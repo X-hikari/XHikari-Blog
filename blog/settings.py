@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "api",
     'corsheaders',
+    'haystack',  # 添加 haystack
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,16 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 }
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),  # 索引存放路径
+        'INCLUDE_SPELLING': True,  # 启用拼写建议
+        'HIGHLIGHTING': True,
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'  # 自动更新索引
+HAYSTACK_SEARCH_RESULTS_HIGHLIGHT = True     # 查询内容高亮
+
