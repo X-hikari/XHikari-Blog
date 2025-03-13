@@ -19,7 +19,6 @@
           <router-link to="/emotion"><i class="iconfont icon-comiisfashuoshuo"></i> 说说</router-link>
           <router-link to="/message"><i class="iconfont icon-liuyanban-05"></i> 留言</router-link>
           <router-link to="/more"><i class="iconfont icon-gengduo"></i> 更多</router-link>
-          <router-link to="/music"><i class="iconfont icon-icon-test"></i> 音乐</router-link>
           <router-link to="/" class="search-link">
             <i class="iconfont icon-sousuo"></i> 搜索
             <!-- 搜索框 -->
@@ -35,7 +34,11 @@
     <div v-if="showTitle" class="page-title">
       <div class="page-title-text">Xhikari's blog</div> 
     </div>
-  
+    
+    <div>
+      <MusicPlayer />
+    </div>
+
     <div class="main-content">
       <router-view></router-view>
     </div>
@@ -46,6 +49,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
 import TimeWatch from '@/components/TimeWatch.vue';
+import MusicPlayer from './components/Music/MusicPlayer.vue';
 
 const isDark = ref(localStorage.getItem("theme") === "dark");
 const route = useRoute(); // 获取当前路由对象
@@ -78,7 +82,6 @@ watch(route, (newRoute) => {
   }
 });
 </script>
-
 
 <style scoped>
 .header {
