@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { PageNotFound } from 'vue-error-page';
 import Home from '../views/Home.vue'; 
 import Classify from '../views/Classify.vue'; 
 import Article from '@/views/Article.vue';
