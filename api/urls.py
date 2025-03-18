@@ -14,4 +14,6 @@ urlpatterns = [
     path('addmessage/', views.AddMessage.as_view(), name='add-message'),
     path('about/', views.AboutDetail.as_view(), name='about'),
     path('searcharticles/', views.SearchArticles.as_view(), name='search-articles'),
+    path('login/', views.Login.as_view(), name='login'),
+    path('check_login/', views.check_login, name='check_login'),  # 检查登录状态的 API 路由
 ]

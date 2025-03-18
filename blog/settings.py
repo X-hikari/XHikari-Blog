@@ -62,6 +62,10 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True 
 
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = False
+
 ROOT_URLCONF = "blog.urls"
 
 TEMPLATES = [
@@ -156,3 +160,12 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'  # 自动更新索引
 HAYSTACK_SEARCH_RESULTS_HIGHLIGHT = True     # 查询内容高亮
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # 默认的认证后端
+]
+
+AUTH_USER_MODEL = 'api.User'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用数据库保存 Session
+SESSION_COOKIE_NAME = 'sessionid'  # cookie 的名字

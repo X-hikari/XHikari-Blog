@@ -2,6 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from haystack.query import SearchQuerySet
 from django.utils import timezone
 from .models import *
@@ -172,3 +175,22 @@ class SearchArticles(APIView):
         else:
             return Response({'results': [], 'query': query}, status=status.HTTP_200_OK)
 
+class Login(APIView):
+    def post(self, request):
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)  # Django 记录 Session
+            
+            # 手动更新 last_login
+            user.last_login = timezone.now()
+            user.save()
+            return JsonResponse({"message": "Login successful"}, status=200)
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=400)
+
+@login_required
+def check_login(request):
+    return JsonResponse({"status": "logged_in"})

@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, markRaw } from 'vue';
+import { ref, markRaw, onMounted } from 'vue';
 import adminMessage from './adminPage/views/admininformation/adminMessage.vue';
 import articlePost from './adminPage/views/adminarticle/articlePost.vue';
 import articleList from './adminPage/views/adminarticle/articleList.vue';
@@ -71,6 +71,21 @@ const tabs = ref([]);
 const currentTabIndex = ref(0);
 const showArticleButtons = ref(false);
 const showAlbumButtons = ref(false);
+
+async function checkLoginStatus() {
+  const response = await fetch('http://localhost:8001/api/check_login/', {
+    method: 'GET',
+    credentials: 'include',  // 确保发送 cookie
+  });
+
+  if (!response.ok) {
+    window.location.href = "/home";  // 未登录，重定向到主页面
+  }
+}
+
+onMounted(() => {
+  checkLoginStatus();
+});
 
 // 添加标签页的函数
 const addTab = (title, component, mode = null, articleData = null) => {

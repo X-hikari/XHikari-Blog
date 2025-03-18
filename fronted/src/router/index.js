@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { PageNotFound } from 'vue-error-page';
 import Home from '../views/Home.vue'; 
 import Classify from '../views/Classify.vue'; 
 import Article from '@/views/Article.vue';
@@ -9,6 +10,7 @@ import Emotion from '@/views/Emotion.vue';
 import Message from '@/views/Message.vue';
 import More from '@/views/More.vue';
 import Search from '@/views/Search.vue';
+import NotFound from '@/views/NotFound.vue';
 
 const routes = [
   { path: '/', redirect: '/home' }, // 自动重定向到 /home
@@ -21,7 +23,8 @@ const routes = [
   { path: '/emotion', name: 'Emotion', component: Emotion},
   { path: '/message', name: 'Message', component: Message},
   { path: '/more', name: 'More', component: More},
-  { path: '/search', name: 'Search', component: Search}
+  { path: '/search', name: 'Search', component: Search},
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
 
 const router = createRouter({

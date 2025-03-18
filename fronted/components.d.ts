@@ -17,6 +17,7 @@ declare module 'vue' {
     ClassyItem: typeof import('./src/components/Classify/ClassyItem.vue')['default']
     EmotionCalendar: typeof import('./src/components/Emotion/EmotionCalendar.vue')['default']
     EmotionCard: typeof import('./src/components/Emotion/EmotionCard.vue')['default']
+    Login: typeof import('./src/components/Login.vue')['default']
     MessageCard: typeof import('./src/components/Message/MessageCard.vue')['default']
     MusicPlayer: typeof import('./src/components/Music/MusicPlayer.vue')['default']
     Pagination: typeof import('./src/components/Pagination.vue')['default']

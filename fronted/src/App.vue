@@ -2,11 +2,12 @@
   <div class="#app">
     <header class="header">
       <div class="header-content">
+        <Login v-if="showLogin" @close="showLogin = false" />
         <div class="left-actions">
           <div class="logo">
             <img src="@/assets/logo.svg" alt="Logo" />
           </div>
-          <a href="#" class="login"><i class="iconfont icon-denglu-copy"></i> 登录</a>
+          <a class="login" @click="login()"><i class="iconfont icon-denglu-copy"></i> 登录</a>
           <button @click="toggleTheme">
             <i :class="isDark ? 'icon-light-mode' : 'icon-dark-mode'"></i>
           </button>
@@ -50,17 +51,31 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
 import TimeWatch from '@/components/TimeWatch.vue';
 import MusicPlayer from './components/Music/MusicPlayer.vue';
+import Login from './components/Login.vue';
 
 const isDark = ref(localStorage.getItem("theme") === "dark");
 const route = useRoute(); // 获取当前路由对象
 const showTitle = ref(false); // 用于控制标题显示
 const searchQuery = ref(""); // 搜索框的绑定值
+const showLogin = ref(false);
 
 const toggleTheme = () => {
   isDark.value = !isDark.value;
   document.documentElement.classList.toggle("dark-mode", isDark.value);
   localStorage.setItem("theme", isDark.value ? "dark" : "light");
 };
+
+const login = () => {
+  showLogin.value = !showLogin.value;
+}
+
+watch(showLogin, (newValue) => {
+  if (newValue) {
+    document.body.style.overflow = "hidden"; // 禁止滚动
+  } else {
+    document.body.style.overflow = ""; // 恢复滚动
+  }
+});
 
 onMounted(() => {
   // 初始化时根据当前主题设置
@@ -70,6 +85,13 @@ onMounted(() => {
 });
 
 watch(route, (newRoute) => {
+  if (newRoute.name === 'NotFound') {
+    // 404 页面
+    document.querySelector('.main-content').classList.add('no-background');
+    showTitle.value = false;
+    return ;
+  }
+
   // 每次路由变化时，更新背景图显示的状态
   if (newRoute.path === '/home' || newRoute.path === '/message') {
     document.querySelector('.main-content').classList.add('no-background');

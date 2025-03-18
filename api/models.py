@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Max
+from django.contrib.auth.models import AbstractUser
 import os
 
 # Create your models here.
@@ -37,20 +38,21 @@ class AlbumPhoto(models.Model):
     def __str__(self):
         return self.file.name
 
-class User(models.Model):
+class User(AbstractUser):
     UID = models.IntegerField(primary_key=True, unique=True)
     username = models.CharField(max_length=50, unique=True)
-    password_hash = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
     phone = models.CharField(max_length=15, null=True, blank=True)
     email = models.CharField(max_length=30, null=True, blank=True)
     signature = models.CharField(max_length=100, null=True, blank=True)
+    last_login = models.DateTimeField(null=True, blank=True)
     
     # 外键
     avater = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # 只在没有设置 user_id 的情况下，才自动赋值
-        if not self.user_id:
+        if not self.UID:
             # 获取当前最大的 user_id，并加 1
             max_user_id = User.objects.aggregate(Max('UID'))['UID__max']
             if max_user_id:
@@ -58,7 +60,7 @@ class User(models.Model):
             else:
                 new_user_id = 10000000  # 如果没有记录，初始化为 10000000（8 位）
             # 确保 user_id 是 8 位
-            self.user_id = new_user_id
+            self.UID = new_user_id
         super().save(*args, **kwargs)
 
     class Meta:
