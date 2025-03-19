@@ -58,15 +58,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import axios from "axios";
 
 const webName = ref("Xhikari");
 const webSign = ref("与你在此的相遇\n就是命运石之门的选择");
 const webBulletin = ref("这里是公告栏喵！这里是小肖的赛博小窝，正在搭建喵！")
 const maxBulletinLength = 75;  // 设置公告最大字数
 const currentBulletinLength = computed(() => webBulletin.value.length);
-const articleNum = 17;
-const todayVisit = 0;
-const totalVisit = 1;
+const articleNum = ref(0);
+const todayVisit = ref(0);
+const totalVisit = ref(0);
 
 // 定义初始时间
 const creTime = ref("2024-12-18 21:58:37");
@@ -88,8 +89,14 @@ const updateRunTime = () => {
   runTime.value = ` ${days} 天 ${hours % 24} 小时 ${minutes % 60} 分钟 ${seconds % 60} 秒`;
 };
 
+const fetchArticleNum = async () => {
+  const response = await axios.get("http://localhost:8001/api/admin/searchArticle/");
+  articleNum.value = response.data.count;
+}
+
 // 组件挂载后启动定时器，每秒更新一次运行时长
 onMounted(() => {
+  fetchArticleNum();
   setInterval(updateRunTime, 1000); // 每秒调用一次
 });
 

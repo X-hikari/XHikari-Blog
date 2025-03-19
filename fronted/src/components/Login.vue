@@ -23,15 +23,17 @@
 <script setup>
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
+import sha256 from 'crypto-js/sha256';
 
 const username = ref('');
 const password = ref('');
 const emit = defineEmits(['close']);
 
 async function login(username, password) {
+  const hashedPassword = sha256(password).toString();
   const params = new URLSearchParams();
   params.append("username", username);
-  params.append("password", password);
+  params.append("password", hashedPassword);
 
   const response = await fetch("http://localhost:8001/api/login/", {
     method: "POST",
