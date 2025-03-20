@@ -166,7 +166,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['id', 'name', 'description', 'count', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'count', 'created_at', 'updated_at', 'status']
 
     def get_count(self, obj):
         return obj.albumphoto_set.count()

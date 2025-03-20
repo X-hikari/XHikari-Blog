@@ -49,6 +49,7 @@ class Album(models.Model):
     description = models.TextField(null=True, blank=True)  # 分类描述
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=[('private', 'Private'), ('public', 'Public')], default='public')
 
     def __str__(self):
         return self.name

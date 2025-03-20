@@ -3,6 +3,11 @@ from api.models import WebInformation, Article
 from django.core.cache import cache
 
 @shared_task
+def clear_cache_daily():
+    """清空所有缓存"""
+    cache.clear()
+
+@shared_task
 def update_site_stats():
     # 调用 WebInformation 的 update_stats 方法
     WebInformation.update_stats()

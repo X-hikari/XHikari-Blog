@@ -652,6 +652,7 @@ class UpdateAlbum(APIView):
         album_id = request.data.get('id')
         name = request.data.get('name')
         description = request.data.get('description')
+        status = request.data.get('status')
         current_time = timezone.now()
 
         if not name:
@@ -667,6 +668,7 @@ class UpdateAlbum(APIView):
         album.name = name
         album.description = description
         album.updated_at = current_time
+        album.status = status
         album.save()
 
         return Response({"message": "photo updated successfully"}, status=200)

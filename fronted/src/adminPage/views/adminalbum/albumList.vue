@@ -20,6 +20,7 @@
           <th class="count-column">相片数量</th>
           <th class="time-column">创建时间</th>
           <th class="time-column">更新时间</th>
+          <th class="status-column">权限</th>
           <th class="action-column">操作</th>
         </tr>
       </thead>
@@ -36,6 +37,7 @@
           <td class="count-column">{{ album.count }}</td>
           <td class="time-column">{{ album.created_at }}</td>
           <td class="time-column">{{ album.updated_at }}</td>
+          <td class="status-column">{{ album.status }}</td>
           <td class="action-column">
             <button @click="editalbum(album)" class="edit-option">编辑</button>
             <button @click="deleteSelectedAlbums([album.id])" class="delete-option">删除</button>
@@ -103,6 +105,14 @@
         ></textarea>
       </div>
 
+      <!-- 相册状态 -->
+      <div class="form-item">
+        <label for="status">查看权限:</label>
+        <select v-model="currentAlbum.status" id="albumStatus">
+          <option v-for="option in albumStatus" :key="option" :value="option">{{ option }}</option>
+        </select>
+      </div>
+
       <!-- 文章数目 -->
       <div class="form-item">
         <label for="count">文章数目:</label>
@@ -137,6 +147,7 @@ const albums = ref([]);
 const addName = ref("");
 const addDescription = ref("");
 const currentAlbum = ref({});
+const albumStatus = ['private', 'public'];
 
 const page = ref(1); // 当前页数
 const totalPages = ref(1); // 总页数
@@ -180,6 +191,7 @@ const fetchAlbums = async () => {
         selected: false, // 前端状态
         created_at: album.created_at,  // 创建时间
         updated_at: album.updated_at, // 更新时间
+        status: album.status,
       }));
       // 更新总页数
       totalPages.value = Math.ceil(response.data.count / 6);
@@ -270,6 +282,7 @@ async function edit_Album() {
     formData.append('id', currentAlbum.value.id);
     formData.append('name', currentAlbum.value.name);
     formData.append('description', currentAlbum.value.description);
+    formData.append('status', currentAlbum.value.status);
 
     const response = await axios.post('http://localhost:8001/api/admin/updateAlbum/', formData, {
     headers: {

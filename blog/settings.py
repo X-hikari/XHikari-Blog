@@ -130,6 +130,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'api.tasks.sync_article_views_to_db',
         'schedule': crontab(minute='*/55'),  # 每 55 分钟同步一次
     },
+    'clear-cache-daily': {
+        'task': 'api.tasks.clear_cache_daily',
+        'schedule': crontab(minute=0, hour=0),  # 每天零点执行
+    },
 }
 
 # 终端中执行celery -A myproject worker --loglevel=info启动定时任务

@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+from datetime import timedelta
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -12,15 +13,35 @@ from .serializers import *
 from datetime import datetime
 from django.conf import settings
 from rest_framework import status
-from django.core.cache import cache
 from api.utils import record_visit
 import os
-import pytz
 
 class VisitWeb(APIView):
     def post(self, request):
         record_visit(request)
         return JsonResponse({"message": "Visit recorded"}, status=200)
+    
+class WebInformationList(APIView):
+    def get(self, request):
+        today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
+
+        # 获取今天的数据
+        today_stats = WebInformation.objects.get(date=today)
+
+        if today_stats:
+            total_views = today_stats.total_views
+            today_views = today_stats.today_views
+        else:
+            # 获取昨天的数据
+            yesterday_stats = WebInformation.objects.filter(date=yesterday).first()
+            total_views = yesterday_stats.total_views if yesterday_stats else 0
+            today_views = 0  # 今日访问量为 0
+        
+        return Response({
+            "total_views": total_views,
+            "today_views": today_views
+        }, status=200)
     
 class HomeNumberList(APIView):
     def get(self, request):
@@ -90,7 +111,7 @@ class CategoryDetailView(APIView):
         
 class AlbumList(APIView):
     def get(self, request):
-        albums = Album.objects.all().order_by('id')
+        albums = Album.objects.filter(status="public").order_by('id')
         serializer = AlbumSerializer(albums, many=True)  # 序列化数据
         return Response(serializer.data)
     

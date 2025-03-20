@@ -94,8 +94,17 @@ const fetchArticleNum = async () => {
   articleNum.value = response.data.count;
 }
 
+const fetchWebInformation = async () => {
+  const response = await axios.get("http://localhost:8001/api/webinformation/");
+  if (response.status == 200){
+    totalVisit.value = response.data.total_views;
+    todayVisit.value = response.data.today_views;
+  }
+}
+
 // 组件挂载后启动定时器，每秒更新一次运行时长
 onMounted(() => {
+  fetchWebInformation();
   fetchArticleNum();
   setInterval(updateRunTime, 1000); // 每秒调用一次
 });
