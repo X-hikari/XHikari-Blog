@@ -49,6 +49,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
+import axios from 'axios';
 import TimeWatch from '@/components/TimeWatch.vue';
 import MusicPlayer from './components/Music/MusicPlayer.vue';
 import Login from './components/Login.vue';
@@ -77,7 +78,15 @@ watch(showLogin, (newValue) => {
   }
 });
 
+const VisitUser = async () => {
+  const response = await axios.post("http://localhost:8001/api/visit/");
+  if (response.status == 200) {
+    console.log("记录访问成功");
+  }
+}
+
 onMounted(() => {
+  VisitUser();
   // 初始化时根据当前主题设置
   if (document.body.classList.contains('dark-mode')) {
     isDark.value = true;

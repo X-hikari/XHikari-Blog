@@ -12,9 +12,16 @@ from .serializers import *
 from datetime import datetime
 from django.conf import settings
 from rest_framework import status
+from django.core.cache import cache
+from api.utils import record_visit
 import os
 import pytz
 
+class VisitWeb(APIView):
+    def post(self, request):
+        record_visit(request)
+        return JsonResponse({"message": "Visit recorded"}, status=200)
+    
 class HomeNumberList(APIView):
     def get(self, request):
         try:
@@ -57,6 +64,7 @@ class CategoryList(APIView):
 class ArticleDetailView(APIView):
     def get(self, request):
         article_id = request.GET.get('id')
+        record_visit(request, article_id)
         if not article_id or not article_id.isdigit():
             return Response({"error": "A valid ID is required"}, status=400)
         

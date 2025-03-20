@@ -100,6 +100,39 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/0',  # 使用本地 Redis
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Celery 配置
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # 使用 Redis 作为消息代理
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'update-site-stats-morning': {
+        'task': 'api.tasks.update_site_stats',  # 调用任务
+        'schedule': crontab(minute=0, hour=4),   # 每天凌晨 4 点执行
+    },
+    'update-site-stats-afternoon': {
+        'task': 'api.tasks.update_site_stats',  # 调用任务
+        'schedule': crontab(minute=0, hour=16),  # 每天下午 4 点执行
+    },
+    'sync-article-views-to-db': {
+        'task': 'api.tasks.sync_article_views_to_db',
+        'schedule': crontab(minute='*/55'),  # 每 55 分钟同步一次
+    },
+}
+
+# 终端中执行celery -A myproject worker --loglevel=info启动定时任务
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

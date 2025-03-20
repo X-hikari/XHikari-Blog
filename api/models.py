@@ -1,9 +1,35 @@
 from django.db import models
 from django.db.models import Max
 from django.contrib.auth.models import AbstractUser
+from django.core.cache import cache
+from django.utils import timezone
+from django_redis import get_redis_connection
 import os
 
 # Create your models here.
+class WebInformation(models.Model):
+    date = models.DateField(auto_now_add=True, unique=True)  # 统计日期
+    total_views = models.IntegerField(default=0)  # 总访问量
+    today_views = models.IntegerField(default=0)  # 今日访问量
+    unique_visitors = models.IntegerField(default=0)  # 独立访客
+
+    @classmethod
+    def update_stats(cls):
+        """每天定时同步 Redis 数据到数据库"""
+        today = timezone.now().date()
+         # 获取 Redis 连接
+        redis_conn = get_redis_connection("default")
+        # 获取 Redis 集合中独立访客的数量
+        unique_visitors_count = redis_conn.scard("unique_visitors_" + str(today))
+
+        site_stats, _ = cls.objects.get_or_create(date=today)
+        
+        site_stats.today_views = cache.get("today_views", 0)
+        site_stats.total_views = cache.get("total_views", 0)
+        site_stats.unique_visitors = unique_visitors_count
+
+        site_stats.save()
+
 class Media(models.Model):
     file = models.FileField(upload_to='images/')  # 存储文件的路径
     file_type = models.CharField(max_length=50)  # 文件类型（如图片、视频等）
