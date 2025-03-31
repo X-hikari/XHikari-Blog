@@ -10,7 +10,8 @@
             <input type="range" 
                    v-model="progress" 
                    :max="100" 
-                   @input="seekSong" 
+                   @mousedown="isSeeking = true"
+                   @mouseup="handleSeek"
                    class="progress-bar" />
             <div class="time-display">{{ currentTime }} / {{ duration }}</div>
           </div>
@@ -64,6 +65,13 @@ const currentLyrics = ref('加载中...');
 const progress = ref(0);
 
 const currentSong = computed(() => playlist.value[currentIndex.value] || {});
+
+const isSeeking = ref(false);
+
+const handleSeek = () => {
+  isSeeking.value = false;
+  seekSong();
+};
 
 const keepControlsVisible = () => {
   showControls.value = true;
@@ -127,8 +135,6 @@ const loadSong = () => {
     sound.value.unload();
   }
 
-  // console.log(currentSong.value.file);
-
   sound.value = new Howl({
     src: [currentSong.value.file],
     html5: true,
@@ -152,7 +158,7 @@ const loadSong = () => {
 };
 
 const updateTime = () => {
-  if (!sound.value || !sound.value.playing()) return;
+  if (!sound.value || !sound.value.playing() || isSeeking.value) return;
 
   const current = sound.value.seek() || 0;
   currentTime.value = formatTime(current);
