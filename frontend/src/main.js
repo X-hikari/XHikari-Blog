@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router/index'
 import '@/assets/icons/iconfont/iconfont.css' 
 import { createPinia } from 'pinia';
+import { API_BASE_URL } from './config'
 
 const app = createApp(App)
 

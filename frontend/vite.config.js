@@ -44,4 +44,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    host: true,       // 监听 0.0.0.0，允许外部访问
+    port: 5173,       // 端口号，和 docker 映射端口对应
+    // cors: true,    // 如果需要跨域，可以打开这行
+  },
 })

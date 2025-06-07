@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# 加载 .env 文件
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,30 +94,57 @@ WSGI_APPLICATION = "blog.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'blog_db',
+#         'USER': 'root',
+#         'PASSWORD': 'xxy2313584',
+#         'HOST': '127.0.0.1',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'blog_db',
-        'USER': 'root',
-        'PASSWORD': 'xxy2313584',
-        'HOST': '127.0.0.1',
+        'NAME': os.getenv('MYSQL_DATABASE', 'blog'),
+        'USER': os.getenv('MYSQL_USER', 'bloguser'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD', 'blogpassword'),
+        'HOST': os.getenv('MYSQL_HOST', 'db'),  # 默认为 docker-compose 中的 db
+        'PORT': '3306',
     }
 }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/0',  # 使用本地 Redis
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/0',  # 使用本地 Redis
+        'LOCATION': f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/1",
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
 }
 
+
 # Celery 配置
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # 使用 Redis 作为消息代理
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # 使用 Redis 作为消息代理
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/0"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
 
 from celery.schedules import crontab
 

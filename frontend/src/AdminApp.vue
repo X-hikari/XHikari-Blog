@@ -60,6 +60,7 @@ import albumList from './adminPage/views/adminalbum/albumList.vue';
 import mediaList from './adminPage/views/adminmedia/mediaList.vue';
 import emotionList from './adminPage/views/adminemotion/emotionList.vue';
 import messageList from './adminPage/views/adminmessage/messageList.vue';
+import { API_BASE_URL } from '@/config'
 
 const adminMessageComponent = markRaw(adminMessage);
 const articlePostComponent = markRaw(articlePost);

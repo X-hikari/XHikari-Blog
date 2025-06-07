@@ -1,4 +1,4 @@
-from celery_api import shared_task
+from celery import shared_task
 from api.models import WebInformation, Article
 from django.core.cache import cache
 
