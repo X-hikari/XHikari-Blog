@@ -6,9 +6,11 @@ import App from './App.vue'
 import router from './router/index'
 import '@/assets/icons/iconfont/iconfont.css' 
 import { createPinia } from 'pinia';
-import { API_BASE_URL } from './config'
+// import { API_BASE_URL } from './config'
 
 const app = createApp(App)
+
+// app.config.globalProperties.$apiBaseUrl = API_BASE_URL  // 挂载全局变量
 
 app.use(router)
 app.use(createPinia());

@@ -842,8 +842,10 @@ class MessageList(APIView):
         else:
             messages = Message.objects.all()
 
-        serializer = MessageSerializer(messages, many=True)
-        return Response({"results": serializer.data})
+        paginator = Pagination()
+        paginated_messages = paginator.paginate_queryset(messages, request)
+        serializer = MessageSerializer(paginated_messages, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
 class DeleteMessages(APIView):
     def post(self, request):

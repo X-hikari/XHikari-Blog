@@ -206,6 +206,7 @@ const fetchEmotions = async () => {
         time: emotion.created_at,
         limit: emotion.status
       }));
+      totalPages.value = Math.ceil(response.data.count / 6);
     } else {
       console.error("后端说说数据格式不正确：", response.data);
     }
