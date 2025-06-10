@@ -1,4 +1,4 @@
 .vscode/
-node_moudules/
+node_modules/
 # Local Python package cache
 __pycache__/
