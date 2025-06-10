@@ -6,6 +6,7 @@
 *.sql
 
 backend/media/
+backend/whoosh_index/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

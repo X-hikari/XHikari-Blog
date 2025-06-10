@@ -72,7 +72,7 @@ class CategoriesOutSubView(APIView):
         categories_without_subcategory = CategoryAllNameMinSerializer.get_categories_without_subcategories()
         return Response(categories_without_subcategory)
     
-UPLOAD_ARTICLE_DIR = ".\\fronted\\public\\uploads"
+UPLOAD_ARTICLE_DIR = "./uploads"
 
 class UploadImage(APIView):
     def post(self,request):
@@ -84,7 +84,7 @@ class UploadImage(APIView):
             file_name = file.name  # 使用上传的文件名，不进行修改
 
             file_path = os.path.join(uploadPath, file_name)
-            # print(file_path)
+            print(file_path)
 
             # 创建目录，如果没有的话
             os.makedirs(uploadPath, exist_ok=True)

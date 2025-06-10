@@ -40,6 +40,7 @@ import { ref, onMounted, nextTick, watch, onBeforeUnmount } from 'vue';
 import MarkdownIt from 'markdown-it';
 import Prism from 'prismjs';
 import '@/assets/css/markdown-style.css';
+import 'prismjs/components/prism-cpp';
 import "@/utils/mathjax";
 import "mathjax/es5/tex-svg"; 
 

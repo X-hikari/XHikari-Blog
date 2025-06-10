@@ -7,6 +7,7 @@ services:
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
+      - ./frontend/public/uploads:/app/uploads  # 添加这行，将前端上传目录挂载到后端
     ports:
       - "8001:8000"
     depends_on:
