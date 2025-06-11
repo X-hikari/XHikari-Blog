@@ -101,7 +101,7 @@ function parseMarkdownWithHeadings(markdownText) {
   const stack = [];
   let idCounter = 1;  // 用于生成 ID
 
-  console.log("init", stack);
+  // console.log("init", stack);
 
   tokens.forEach((token, index) => {
     // 如果遇到标题 token
@@ -137,7 +137,7 @@ function parseMarkdownWithHeadings(markdownText) {
         stack[stack.length - 1].children.push(heading);
       } else {
         // 如果没有父标题，则添加到根标题数组中
-        console.log(heading, stack.length);
+        // console.log(heading, stack.length);
         headings.push(heading);
       }
 

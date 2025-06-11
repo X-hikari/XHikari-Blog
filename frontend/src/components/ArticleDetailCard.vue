@@ -99,7 +99,7 @@ onMounted(() => {
   nextTick(() => {
     const markdownContent = document.querySelector('.markdown-body');
     if (markdownContent) {
-      const headingElements = markdownContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      const headingElements = markdownContent.querySelectorAll('h2, h3, h4, h5, h6');
       headingElements.forEach((el, index) => {
         headings.value[index].ref = el; // 绑定 ref
       });
