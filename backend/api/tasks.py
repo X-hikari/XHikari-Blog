@@ -9,6 +9,7 @@ def clear_cache_daily():
 
 @shared_task
 def update_site_stats():
+    """更新网站统计信息"""
     # 调用 WebInformation 的 update_stats 方法
     WebInformation.update_stats()
 

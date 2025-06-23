@@ -165,7 +165,7 @@ const fetchMessages = async () => {
         created_at: message.created_at,
       }));
       // 更新总页数
-      totalPages.value = Math.ceil(response.data.count / 6);
+      totalPages.value = Math.ceil(response.data.count / response.data.page_size);
     } else {
       console.error("后端数据格式不正确：", response.data);
     }

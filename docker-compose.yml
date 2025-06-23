@@ -22,12 +22,12 @@ services:
       - ./frontend:/app
       - /app/node_modules  # 这一行阻止宿主机覆盖容器内的 node_modules
     ports:
-      - "3000:5173"
+      - "5173:5173"
     command: npm run dev
 
   db:
     image: mysql:8
-    restart: always
+    # restart: always
     env_file: .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -49,6 +49,18 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     command: celery -A blog.celery_api worker --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend
+      - redis
+    env_file: .env
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: celery -A blog.celery_api beat --loglevel=info
     volumes:
       - ./backend:/app
     depends_on:

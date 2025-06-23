@@ -46,7 +46,10 @@ class ArticleList(APIView):
         
         # 序列化数据并返回分页响应，包含 count 等分页信息
         serializer = ArticleAllSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
 
 class ArticleContentView(APIView):
     def get(self, request):
@@ -249,7 +252,10 @@ class MediaList(APIView):
         
         # 序列化数据并返回分页响应，包含 count 等分页信息
         serializer = MediaSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
     
 class AddMedia(APIView):
     def post(self, request):
@@ -382,7 +388,10 @@ class CategoryList(APIView):
 
         # 序列化数据并返回分页响应，包含 count 等分页信息
         serializer = CategoryAllSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
 
 class CategoryName(APIView):
     def get(self, request):
@@ -532,7 +541,10 @@ class AlbumPhotoList(APIView):
         serializer = AlbumPhotoSerializer(paginated_photos, many=True)
 
         # 返回分页后的响应
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
 
 class UpdateAlbumPhoto(APIView):
     def post(self, request):
@@ -620,7 +632,10 @@ class AlbumList(APIView):
             paginator = Pagination()
             paginated_albums = paginator.paginate_queryset(albums, request)
             serializer = AlbumSerializer(paginated_albums, many=True)
-            return paginator.get_paginated_response(serializer.data)
+            response = paginator.get_paginated_response(serializer.data)
+            # 增加 page_size 字段
+            response.data['page_size'] = paginator.page_size
+            return response
         
         # 否则返回完整数据
         serializer = AlbumSerializer(albums, many=True)
@@ -691,9 +706,13 @@ class EmotionList(APIView):
             emotions = Emotion.objects.all()
         
         paginator = Pagination()
+        paginator.page_size = 12
         paginated_emotions = paginator.paginate_queryset(emotions, request)
         serializer = EmotionSerializer(paginated_emotions, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
 
 class AddEmotion(APIView):
     def post(self, request):
@@ -845,7 +864,10 @@ class MessageList(APIView):
         paginator = Pagination()
         paginated_messages = paginator.paginate_queryset(messages, request)
         serializer = MessageSerializer(paginated_messages, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
+        # 增加 page_size 字段
+        response.data['page_size'] = paginator.page_size
+        return response
     
 class DeleteMessages(APIView):
     def post(self, request):

@@ -54,8 +54,8 @@ async function fetchArticle() {
   axios.get(`http://localhost:8001/api/about`)
   .then(response => {
     article.value = response.data;
-    console.log(response.data);
-    console.log(article.value);
+    // console.log(response.data);
+    // console.log(article.value);
     headings.value = parseMarkdownWithHeadings(article.value.content);
   })
   .catch(error => {

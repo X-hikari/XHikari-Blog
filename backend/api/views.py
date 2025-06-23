@@ -27,7 +27,7 @@ class WebInformationList(APIView):
         yesterday = today - timedelta(days=1)
 
         # 获取今天的数据
-        today_stats = WebInformation.objects.get(date=today)
+        today_stats = WebInformation.objects.filter(date=today).first()
 
         if today_stats:
             total_views = today_stats.total_views
@@ -35,9 +35,18 @@ class WebInformationList(APIView):
         else:
             # 获取昨天的数据
             yesterday_stats = WebInformation.objects.filter(date=yesterday).first()
-            total_views = yesterday_stats.total_views if yesterday_stats else 0
-            today_views = 0  # 今日访问量为 0
-        
+            if yesterday_stats:
+                total_views = yesterday_stats.total_views
+                today_views = 0  # 今日访问量为 0
+            else:
+                # 查找最后一次有数据的记录
+                last_stats = WebInformation.objects.order_by('-date').first()
+                if last_stats:
+                    total_views = last_stats.total_views
+                else:
+                    total_views = 0
+                today_views = 0  # 今日访问量为 0
+
         return Response({
             "total_views": total_views,
             "today_views": today_views
