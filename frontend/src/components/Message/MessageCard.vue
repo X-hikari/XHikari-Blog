@@ -12,6 +12,12 @@
 
 <script setup>
 import { computed } from "vue";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const props = defineProps({
   message: {
@@ -23,8 +29,8 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const formattedTime = computed(() => {
-  const utcDate = new Date(props.message.created_at); // 转换为 Date 对象
-  return utcDate.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" });
+  if (!props.message.created_at) return '';
+  return dayjs.utc(props.message.created_at).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss');
 });
 
 // 关闭留言卡片

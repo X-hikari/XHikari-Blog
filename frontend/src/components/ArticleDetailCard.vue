@@ -15,8 +15,8 @@
       
       <!-- 时间信息 -->
       <div class="meta-row">
-        <span class="meta-item" v-if="data.created_at">创建时间：{{ data.created_at }}</span>
-        <span class="meta-item" v-if="data.updated_at">更新时间：{{ data.updated_at }}</span>
+        <span class="meta-item" v-if="data.created_at">创建时间：{{ formattedCreatedDate }}</span>
+        <span class="meta-item" v-if="data.updated_at">更新时间：{{ formattedUpdatedDate }}</span>
       </div>
     </div>
     
@@ -36,13 +36,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, watch, onBeforeUnmount, computed } from 'vue';
 import MarkdownIt from 'markdown-it';
 import Prism from 'prismjs';
 import '@/assets/css/markdown-style.css';
 import 'prismjs/components/prism-cpp';
 import "@/utils/mathjax";
 import "mathjax/es5/tex-svg"; 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// 加载插件
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const props = defineProps({
   data: {
@@ -53,6 +60,17 @@ const props = defineProps({
     type: Number,
     required: true
   },
+});
+
+const formattedCreatedDate = computed(() => {
+  if (!props.data.created_at) return '';
+  const bjTime = dayjs.utc(props.data.created_at).tz('Asia/Shanghai');
+  return bjTime.format('YYYY年MM月DD日 HH:mm:ss');
+});
+const formattedUpdatedDate = computed(() => {
+  if (!props.data.updated_at) return '';
+  const bjTime = dayjs.utc(props.data.updated_at).tz('Asia/Shanghai');
+  return bjTime.format('YYYY年MM月DD日 HH:mm:ss');
 });
 
 const emit = defineEmits(['update-active-root']);

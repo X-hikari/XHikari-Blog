@@ -23,29 +23,9 @@ class VisitWeb(APIView):
     
 class WebInformationList(APIView):
     def get(self, request):
-        today = timezone.now().date()
-        yesterday = today - timedelta(days=1)
-
-        # 获取今天的数据
-        today_stats = WebInformation.objects.filter(date=today).first()
-
-        if today_stats:
-            total_views = today_stats.total_views
-            today_views = today_stats.today_views
-        else:
-            # 获取昨天的数据
-            yesterday_stats = WebInformation.objects.filter(date=yesterday).first()
-            if yesterday_stats:
-                total_views = yesterday_stats.total_views
-                today_views = 0  # 今日访问量为 0
-            else:
-                # 查找最后一次有数据的记录
-                last_stats = WebInformation.objects.order_by('-date').first()
-                if last_stats:
-                    total_views = last_stats.total_views
-                else:
-                    total_views = 0
-                today_views = 0  # 今日访问量为 0
+        # 从 Redis 缓存中获取
+        total_views = cache.get("total_views", 0)
+        today_views = cache.get("today_views", 0)
 
         return Response({
             "total_views": total_views,
@@ -190,6 +170,7 @@ class AboutDetail(APIView):
     def get(self, request):
         # 读取 about.md 文件
         file_path = os.path.join(settings.BASE_DIR, "content", "about.md")
+        print(file_path)
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 md_content = f.read()

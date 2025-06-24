@@ -29,9 +29,16 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 const currentIndex = ref(0);
 const isFullScreen = ref(false);
+
+// 加载插件
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const props = defineProps({
   text: String,
@@ -39,8 +46,17 @@ const props = defineProps({
   images: Array
 });
 
-const formattedDate = computed(() => props.created_at?.split(' ')[0] || '');
-const formattedTime = computed(() => props.created_at?.split(' ')[1] || '');
+// 转换为北京时间并格式化
+const formattedDate = computed(() => {
+  if (!props.created_at) return '';
+  const bjTime = dayjs.utc(props.created_at).tz('Asia/Shanghai');
+  return bjTime.format('YYYY-MM-DD');
+});
+const formattedTime = computed(() => {
+  if (!props.created_at) return '';
+  const bjTime = dayjs.utc(props.created_at).tz('Asia/Shanghai');
+  return bjTime.format('HH:mm:ss');
+});
 
 // 显示大图
 const showFullScreen = (index) => {

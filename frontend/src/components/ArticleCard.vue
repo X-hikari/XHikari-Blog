@@ -46,9 +46,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
-import { format } from 'date-fns';  // 用于格式化日期
+import { ref, onMounted, nextTick, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// 加载插件
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const router = useRouter();
 
@@ -106,7 +112,11 @@ const goToArticle = (id) => {
 };
 
 // 格式化日期
-const formattedDate = format(new Date(props.date), 'yyyy年MM月dd日 HH:mm:SS');
+const formattedDate = computed(() => {
+  if (!props.date) return '';
+  const bjTime = dayjs.utc(props.date).tz('Asia/Shanghai');
+  return bjTime.format('YYYY年MM月DD日 HH:mm:ss');
+});
 
 // 获取图片和摘要的实际高度
 const onImageLoad = () => {

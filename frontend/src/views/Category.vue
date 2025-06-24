@@ -1,15 +1,15 @@
 <template>
   <div class="content">
     <div class="introduction" v-if="data">
-      <!-- 文章标题 -->
+      <!-- 分类标题 -->
       <div class="categoryDetailTitle">{{ data.name }}</div>
 
       <!-- 元信息 -->
       <div class="category-meta">      
         <!-- 时间信息 -->
         <div class="meta-row">
-          <span class="meta-item">创建时间：{{ data.created_at }}</span>
-          <span class="meta-item">更新时间：{{ data.updated_at }}</span>
+          <span class="meta-item">创建时间：{{ formattedCreatedDate }}</span>
+          <span class="meta-item">更新时间：{{ formattedUpdatedDate }}</span>
         </div>
       </div>
       
@@ -50,6 +50,13 @@ import axios from 'axios';  // 确保导入 axios
 import { useRoute } from 'vue-router'; // 用于获取路由参数
 import Pagination from '@/components/Pagination.vue'; // 引入分页组件
 import ArticleCard from '@/components/ArticleCard.vue';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// 加载插件
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const route = useRoute();
 const categoryId = ref(route.query.categoryId); // 获取 URL 中的 id 参数
@@ -77,6 +84,18 @@ onMounted(() => {
     console.error('Error fetching articles:', error);
   });
 });
+
+const formattedCreatedDate = computed(() => {
+  if (!data.value.created_at) return '';
+  const bjTime = dayjs.utc(data.value.created_at).tz('Asia/Shanghai');
+  return bjTime.format('YYYY年MM月DD日 HH:mm:ss');
+});
+const formattedUpdatedDate = computed(() => {
+  if (!data.value.updated_at) return '';
+  const bjTime = dayjs.utc(data.value.updated_at).tz('Asia/Shanghai');
+  return bjTime.format('YYYY年MM月DD日 HH:mm:ss');
+});
+
 
 // 计算分页后的文章
 const totalPages = computed(() => {

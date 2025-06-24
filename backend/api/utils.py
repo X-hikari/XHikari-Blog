@@ -4,10 +4,13 @@ from django.utils import timezone
 from api.models import Article, WebInformation
 
 def record_visit(request, article_id=None):
-    # 确保 "total_views" 键存在，若不存在，则初始化为 0
+    # 确保 "total_views" 键存在，若不存在，则读取数据库中时间最晚的 total_views
     if cache.get("total_views") is None:
-        web_information = WebInformation.objects.latest('date') 
-        total_views = web_information.total_views
+        try:
+            web_information = WebInformation.objects.latest('date')
+            total_views = web_information.total_views
+        except WebInformation.DoesNotExist:
+            total_views = 0
         cache.set("total_views", total_views)
 
     # 确保 "today_views" 键存在，若不存在，则初始化为 0
