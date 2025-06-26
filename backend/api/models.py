@@ -25,7 +25,14 @@ class WebInformation(models.Model):
         site_stats, _ = cls.objects.get_or_create(date=today)
         
         site_stats.today_views = cache.get("today_views", 0)
-        site_stats.total_views = cache.get("total_views", 0)
+        total_views = cache.get("total_views")
+        if total_views is None:
+            try:
+                web_information = WebInformation.objects.latest('date')
+                total_views = web_information.total_views
+            except WebInformation.DoesNotExist:
+                total_views = 0
+        site_stats.total_views = total_views
         site_stats.unique_visitors = unique_visitors_count
 
         site_stats.save()

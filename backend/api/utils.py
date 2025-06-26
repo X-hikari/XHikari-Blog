@@ -11,11 +11,11 @@ def record_visit(request, article_id=None):
             total_views = web_information.total_views
         except WebInformation.DoesNotExist:
             total_views = 0
-        cache.set("total_views", total_views)
+        cache.set("total_views", total_views, timeout=None)
 
     # 确保 "today_views" 键存在，若不存在，则初始化为 0
     if cache.get("today_views") is None:
-        cache.set("today_views", 0)
+        cache.set("today_views", 0, timeout=None)
 
     # 递增访问量
     cache.incr("total_views")

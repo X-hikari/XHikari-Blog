@@ -135,12 +135,6 @@ CACHES = {
     }
 }
 
-
-# Celery 配置
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # 使用 Redis 作为消息代理
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-
 CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/0"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

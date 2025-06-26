@@ -16,7 +16,7 @@ def update_site_stats():
 @shared_task
 def sync_article_views_to_db():
     """将缓存中的文章访问量写入数据库"""
-    article_keys = cache.keys("article_views:*")  # 获取所有文章访问量的缓存键
+    article_keys = cache.keys("*article_views:*")  # 获取所有文章访问量的缓存键
     
     for key in article_keys:
         article_id = key.split(":")[-1]  # 提取文章 ID
@@ -24,7 +24,7 @@ def sync_article_views_to_db():
         
         if article_views is not None:
             # 更新数据库
-            Article.objects.filter(id=article_id).update(visit=article_views)
+            Article.objects.filter(id=article_id).update(visits=article_views)
             print(f"文章 {article_id} 访问量同步到数据库: {article_views}")
 
             # 可选：重置缓存，避免重复写入
