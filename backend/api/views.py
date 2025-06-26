@@ -15,6 +15,8 @@ from django.conf import settings
 from rest_framework import status
 from api.utils import record_visit
 import os
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 
 class VisitWeb(APIView):
     def post(self, request):
@@ -194,6 +196,7 @@ class SearchArticles(APIView):
         else:
             return Response({'results': [], 'query': query}, status=status.HTTP_200_OK)
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class Login(APIView):
     def post(self, request):
         username = request.POST.get("username")

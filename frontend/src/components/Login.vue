@@ -29,6 +29,15 @@ const username = ref('');
 const password = ref('');
 const emit = defineEmits(['close']);
 
+// 获取 cookie 中的 csrftoken
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+const csrftoken = getCookie('csrftoken');
+
 async function login(username, password) {
   const hashedPassword = sha256(password).toString();
   const params = new URLSearchParams();
@@ -40,6 +49,7 @@ async function login(username, password) {
     credentials: "include",  // 允许浏览器携带 Cookie
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",  // 使用表单格式
+      "X-CSRFToken": csrftoken,
     },
     body: params.toString(),  // 将表单数据作为请求体
   });
