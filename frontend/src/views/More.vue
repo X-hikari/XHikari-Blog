@@ -187,4 +187,24 @@ watch(
   height: 100%;
   margin-bottom: 1000px;
 }
+
+/* 响应式布局：小屏幕（如手机）适配 */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .left-part {
+    width: 100%;
+    min-width: 100%;
+    order: 1;
+    margin-top: 0;
+  }
+
+  .right-part {
+    width: 100%;
+    min-width: 100%;
+    order: 2;
+  }
+}
 </style>

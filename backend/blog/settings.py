@@ -145,11 +145,11 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'update-site-stats-morning': {
         'task': 'api.tasks.update_site_stats',  # 调用任务
-        'schedule': crontab(minute=0, hour=4),   # 每天凌晨 4 点执行
+        'schedule': crontab(minute=0, hour=20),   # 每天凌晨 4 点执行
     },
     'update-site-stats-afternoon': {
         'task': 'api.tasks.update_site_stats',  # 调用任务
-        'schedule': crontab(minute=0, hour=16),  # 每天下午 4 点执行
+        'schedule': crontab(minute=0, hour=8),  # 每天下午 4 点执行
     },
     'sync-article-views-to-db': {
         'task': 'api.tasks.sync_article_views_to_db',
@@ -157,7 +157,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'clear-cache-daily': {
         'task': 'api.tasks.clear_cache_daily',
-        'schedule': crontab(minute=0, hour=0),  # 每天零点执行
+        'schedule': crontab(minute=1, hour=20),  # 每天凌晨 4 点 1 分执行
     },
 }
 

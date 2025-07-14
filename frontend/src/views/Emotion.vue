@@ -145,4 +145,73 @@ const updateDate = async (querydate) => {
   top: 50px; /* 设置距离页面顶部的固定距离 */
   padding: 10px;
 }
+
+/* 响应式布局 */
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 20px;
+}
+
+.left-panel {
+  flex: 1 1 250px;
+  max-width: 350px;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 300px;
+}
+
+.right-panel {
+  flex: 3 1 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.load-trigger {
+  width: 100%;
+  height: 10px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 50px;
+  padding: 10px;
+}
+
+/* 中等屏幕适配 */
+@media (max-width: 992px) {
+  .content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .left-panel, .right-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .sticky-header {
+    position: relative;
+    top: auto;
+  }
+}
+
+/* 小屏适配 */
+@media (max-width: 576px) {
+  .header {
+    font-size: 1.5em;
+    padding: 12px;
+  }
+
+  .left-panel {
+    padding: 8px;
+  }
+
+  .right-panel {
+    gap: 12px;
+  }
+}
 </style>

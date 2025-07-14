@@ -186,7 +186,6 @@ class SearchArticles(APIView):
         if query:
             # 使用 SearchQuerySet 进行全文搜索
             results = SearchQuerySet().filter(content=query)
-            # print(f"Search Results: {results}")
 
             # 获取与搜索结果匹配的所有文章
             articles = Article.objects.filter(id__in=[result.pk for result in results])

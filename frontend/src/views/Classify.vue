@@ -89,28 +89,43 @@ const updateJumpRoot = (rootId) => {
 
 .main-content {
   display: flex;
-  align-items: stretch;
-  width: 80%; /* 剩余部分 */
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
   gap: 5%;
-  align-items: flex-start; /* 确保左、右部分高度独立 */
 }
 
 .left-part {
-  width: 30%; /* 左边部分占据3的比例 */
-  position: relative; /* 确保 sticky 能工作 */
-  height: 100%;
+  width: 30%;
+  position: relative;
 }
 
 .sticky-header {
-  position: -webkit-sticky; /* Safari 支持的前缀 */
   position: sticky;
-  top: 50px; /* 设置距离页面顶部的固定距离 */
+  top: 50px;
   padding: 10px;
 }
 
 .right-part {
-  width: 65%; /* 右边部分占据7的比例 */
-  height: 100%;
+  width: 65%;
   margin-bottom: 1000px;
+}
+
+/* 响应式样式：小屏幕堆叠布局 */
+@media screen and (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .left-part,
+  .right-part {
+    width: 100%;
+  }
+
+  .sticky-header {
+    position: relative; /* sticky在小屏时可能不适合，改为普通流 */
+    top: 0;
+  }
 }
 </style>

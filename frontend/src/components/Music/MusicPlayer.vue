@@ -71,6 +71,9 @@ const isSeeking = ref(false);
 const handleSeek = () => {
   isSeeking.value = false;
   seekSong();
+  if (isPlaying.value) {
+    sound.value.play(); // 只有正在播放时才继续播放
+  }
 };
 
 const keepControlsVisible = () => {
@@ -175,7 +178,6 @@ const seekSong = () => {
   const current = sound.value.seek() || 0;
   currentTime.value = formatTime(current);
   updateLyrics(current);
-  sound.value.play();
 };
 
 const togglePlay = () => {

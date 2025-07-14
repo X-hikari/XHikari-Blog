@@ -93,4 +93,21 @@ const toggleMode = (mode) => {
 .icon-btn:hover .icon-tooltip {
   display: block;
 }
+
+/* 响应式字体缩放 */
+@media (max-width: 768px) {
+  .album-title {
+    font-size: 2rem;
+  }
+
+  .icon-btn {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-title {
+    font-size: 1.5rem;
+  }
+}
 </style>

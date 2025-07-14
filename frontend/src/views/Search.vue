@@ -121,10 +121,25 @@ const changePage = (newPage) => {
 }
 
 .cards {
+  width: 60%;
+  align-self: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 15px;
   justify-content: center;
+}
+
+/* 响应式调整：屏幕宽度小于768px时 */
+@media (max-width: 768px) {
+  .search-title {
+    width: 90%;
+  }
+
+  .cards {
+    width: 90%;
+    gap: 15px;
+    padding: 10px;
+  }
 }
 </style>

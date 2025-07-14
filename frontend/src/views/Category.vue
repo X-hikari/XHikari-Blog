@@ -124,6 +124,7 @@ const changePage = (newPage) => {
   align-items: center;
   box-sizing: border-box;
   flex-direction: column;
+  /* border: 1px solid blue; */
 }
 
 .introduction {
@@ -186,10 +187,62 @@ const changePage = (newPage) => {
 }
 
 .cards {
+  width: 60%;
+  align-self: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 15px;
   justify-content: center;
+  align-items: center;
+  /* border: 1px solid red; */
+}
+
+/* 响应式调整：屏幕宽度小于768px时 */
+@media (max-width: 768px) {
+  .introduction {
+    width: 90% !important; /* 占满大部分宽度 */
+    padding: 15px;
+    font-size: 0.9em; /* 字体稍微缩小 */
+  }
+
+  .categoryDetailTitle {
+    font-size: 1.8em; /* 标题稍小 */
+    max-width: 100%;
+    padding-top: 2%;
+    padding-bottom: 1%;
+  }
+
+  .category-summary {
+    font-size: 0.9em;
+    margin: 15px 0;
+  }
+
+  .category-meta {
+    font-size: 0.8em;
+    margin-bottom: 10px;
+  }
+
+  .meta-row {
+    flex-direction: column; /* 元信息垂直排列 */
+    gap: 5px;
+  }
+
+  .meta-item {
+    margin-right: 0;
+  }
+
+  .category-bannar img {
+    width: 100%; /* 保证图片自适应宽度 */
+    height: auto;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  .cards {
+    width: 90%;
+    gap: 15px;
+    padding: 10px;
+  }
 }
 </style>

@@ -197,11 +197,11 @@ const changePage = (newPage) => {
 
 .content-bottom {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   margin-top: 0px;
   background-color: rgba(241, 249, 254, 1);
   z-index: 2;
-  /* align-items: flex-start; */
   align-items: stretch;
 }
 
@@ -215,13 +215,13 @@ const changePage = (newPage) => {
 }
 
 .left-part > * {
-  margin-bottom: 15px; /* 设置子元素之间的间隔 */
+  margin-bottom: 15px;
 }
 
 .sticky-header {
-  position: -webkit-sticky; /* Safari 支持的前缀 */
+  position: -webkit-sticky;
   position: sticky;
-  top: 50px; /* 设置距离页面顶部的固定距离 */
+  top: 50px;
   padding: 10px;
 }
 
@@ -234,6 +234,58 @@ const changePage = (newPage) => {
   gap: 20px;
 }
 
+/* ------------------ 响应式设置 ------------------ */
+@media screen and (max-width: 1024px) {
+  .left-part {
+    padding-left: 40px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .background-image .theme {
+    font-size: 3em;
+  }
+
+  .overlay-text {
+    font-size: 1.3em;
+    padding: 0.3em 0.8em;
+  }
+
+  .content-bottom {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .left-part,
+  .right-part {
+    width: 100%;
+    padding: 10px;
+    padding-left: 10px;
+  }
+
+  .sticky-header {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .background-image .theme {
+    font-size: 2.2em;
+  }
+
+  .overlay-text {
+    font-size: 1em;
+    padding: 0.2em 0.6em;
+  }
+
+  .icon-circle {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* ------------------ 动画 ------------------ */
 @keyframes imageAnimation {
   0% {
     opacity: 0;
@@ -264,4 +316,5 @@ const changePage = (newPage) => {
     opacity: 1;
   }
 }
+
 </style>

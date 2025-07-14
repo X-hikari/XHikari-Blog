@@ -193,4 +193,22 @@ watch(
   height: 100%;
   margin-bottom: 1000px;
 }
+
+/* 响应式样式：小屏幕堆叠布局 */
+@media screen and (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .left-part,
+  .right-part {
+    width: 100%;
+  }
+
+  .sticky-header {
+    position: relative; /* sticky在小屏时可能不适合，改为普通流 */
+    top: 0;
+  }
+}
 </style>

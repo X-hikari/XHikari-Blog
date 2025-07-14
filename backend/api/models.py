@@ -17,6 +17,7 @@ class WebInformation(models.Model):
     def update_stats(cls):
         """每天定时同步 Redis 数据到数据库"""
         today = timezone.now().date()
+        print(f"today is {today}")
          # 获取 Redis 连接
         redis_conn = get_redis_connection("default")
         # 获取 Redis 集合中独立访客的数量
@@ -25,13 +26,17 @@ class WebInformation(models.Model):
         site_stats, _ = cls.objects.get_or_create(date=today)
         
         site_stats.today_views = cache.get("today_views", 0)
+        print(f"today_views is {site_stats.today_views}")
         total_views = cache.get("total_views")
         if total_views is None:
+            print("total_views is None")
             try:
                 web_information = WebInformation.objects.latest('date')
                 total_views = web_information.total_views
+                print(f"latest total_views is {total_views}")
             except WebInformation.DoesNotExist:
                 total_views = 0
+        print(f"total_views is {total_views}")
         site_stats.total_views = total_views
         site_stats.unique_visitors = unique_visitors_count
 

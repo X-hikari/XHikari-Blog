@@ -61,4 +61,35 @@ onMounted(() => {
   gap: 20px;
   justify-content: center;
 }
+
+@media (max-width: 1200px) {
+  .album-title {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 768px) {
+  .album-main-content {
+    margin: 100px auto 60px auto;
+  }
+
+  .album-title {
+    font-size: 2em;
+  }
+
+  .album-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-title {
+    font-size: 1.6em;
+  }
+
+  .album-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

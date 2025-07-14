@@ -11,9 +11,14 @@
           <button @click="toggleTheme">
             <i :class="isDark ? 'icon-light-mode' : 'icon-dark-mode'"></i>
           </button>
+
+          <!-- 汉堡按钮（仅在小屏显示） -->
+          <div class="hamburger" @click="toggleMenu">
+            <i class="iconfont icon-liebiao"></i>
+          </div>
         </div>
-  
-        <nav class="nav-links">
+
+        <nav v-show="menuOpen || isWideScreen" class="nav-links">
           <router-link to="/home"><i class="iconfont icon-zhuye"></i> 主页</router-link>
           <router-link to="/classify"><i class="iconfont icon-icon"></i> 分类</router-link>
           <router-link to="/album"><i class="iconfont icon-xiangce"></i> 相册</router-link>
@@ -47,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router'; // 引入 Vue Router 的 useRoute hook
 import axios from 'axios';
 import TimeWatch from '@/components/TimeWatch.vue';
@@ -59,6 +64,19 @@ const route = useRoute(); // 获取当前路由对象
 const showTitle = ref(false); // 用于控制标题显示
 const searchQuery = ref(""); // 搜索框的绑定值
 const showLogin = ref(false);
+const menuOpen = ref(false);
+const isWideScreen = ref(window.innerWidth > 768);
+
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value;
+};
+
+const handleResize = () => {
+  isWideScreen.value = window.innerWidth > 768;
+  if (isWideScreen.value) {
+    menuOpen.value = false; // 自动关闭菜单
+  }
+};
 
 const toggleTheme = () => {
   isDark.value = !isDark.value;
@@ -91,6 +109,11 @@ onMounted(() => {
   if (document.body.classList.contains('dark-mode')) {
     isDark.value = true;
   }
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
 });
 
 watch(route, (newRoute) => {
@@ -343,6 +366,88 @@ button {
   font-weight: bold;
   color: #8683e8;
   z-index: 1;
+}
+
+/* 通用响应式设置 */
+.header-content,
+.nav-links,
+.left-actions {
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.nav-links {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.search-input {
+  max-width: 160px;
+  width: 100%;
+}
+
+/* 汉堡按钮 */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* 过渡动画 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .left-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    gap: 6px;
+    padding-top: 6px;
+  }
+
+  .nav-links a {
+    width: 100%;
+    padding: 6px 0;
+  }
+
+  .search-input {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 3px;
+  }
+
+  .page-title {
+    height: auto;
+    padding: 15px 10px;
+    text-align: center;
+  }
+
+  .page-title .page-title-text {
+    font-size: 24px;
+  }
 }
 
 </style>
